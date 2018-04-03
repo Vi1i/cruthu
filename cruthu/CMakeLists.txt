@@ -1,15 +1,16 @@
+find_package(glm REQUIRED)
+
 configure_file(config.hpp.in ${CMAKE_CURRENT_BINARY_DIR}/config.hpp @ONLY)
 
 add_library(cruthu SHARED
     cruthu.cpp
     cruthu.hpp
     config.hpp.in
-    voxel/block.hpp
-    voxel/block.cpp
-    voxel/blocktype.hpp
-    # voxel/chunk.hpp
-    # voxel/chunk.cpp
+    icosphere/icosphere.hpp
+    icosphere/icosphere.cpp
 )
+
+target_include_directories(cruthu PUBLIC ${GLM_INCLUDE_DIRS})
 
 set_target_properties(cruthu PROPERTIES
     PUBLIC_HEADER "cruthu.hpp;${CMAKE_CURRENT_BINARY_DIR}/config.hpp"
