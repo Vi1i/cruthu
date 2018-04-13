@@ -2,7 +2,10 @@ find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(glfw3 REQUIRED)
 
-add_executable(cruthu-gl main.cpp)
+add_executable(cruthu-gl
+	main.cpp
+	camera/camera.hpp
+)
 
 target_include_directories(cruthu-gl PUBLIC 
 	${OPENGL_INCLUDE_DIR}
@@ -16,6 +19,10 @@ target_link_libraries(cruthu-gl
 	glfw
 	# ${OPENGL_glu_LIBRARY}
 )
+
+# set_target_properties(cruthu PROPERTIES
+#     PUBLIC_HEADER "camera/camera.h;${CMAKE_CURRENT_BINARY_DIR}/config.hpp"
+# )
 
 install(TARGETS cruthu-gl
     EXPORT CruthuTargets

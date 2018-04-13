@@ -5,7 +5,23 @@
 		[
 			[
 				"in",
-				"INSTALL_INTERFACE"
+				"indices"
+			],
+			[
+				"I",
+				"icosphere"
+			],
+			[
+				"elasp",
+				"elapsed_nanoseconds"
+			],
+			[
+				"elas",
+				"elapsed_nanoseconds"
+			],
+			[
+				"LIBR",
+				"GLM_LIBRARY_DIRS"
 			],
 			[
 				"CMAKE_CURR",
@@ -56,12 +72,22 @@
 	"buffers":
 	[
 		{
-			"file": "CMakeLists.txt",
+			"file": "cruthu-gl/main.cpp",
 			"settings":
 			{
-				"buffer_size": 2075,
+				"buffer_size": 9536,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "cruthu-gl/camera.cpp",
+			"settings":
+			{
+				"buffer_size": 4407,
+				"encoding": "UTF-8",
+				"line_ending": "Unix",
+				"name": "#include \"../Headers/Camera.h\""
 			}
 		}
 	],
@@ -72,7 +98,7 @@
 	"build_varint": "",
 	"command_palette":
 	{
-		"height": 349.0,
+		"height": 400.0,
 		"last_filter": "inde",
 		"selected_items":
 		[
@@ -117,15 +143,37 @@
 	},
 	"expanded_folders":
 	[
-		"/home/oboylela/git/cruthu"
+		"/home/oboylela/git/cruthu",
+		"/home/oboylela/git/cruthu/cruthu",
+		"/home/oboylela/git/cruthu/cruthu/icosphere",
+		"/home/oboylela/git/cruthu/cruthu-gl"
 	],
 	"file_history":
 	[
+		"/home/oboylela/git/cruthu/cruthu-gl/camera.hpp",
+		"/home/oboylela/git/cruthu/cruthu/icosphere/icosphere.hpp",
+		"/home/oboylela/git/cruthu/cruthu-gl/main.hpp",
+		"/home/oboylela/git/cruthu/cruthu-gl/main.cpp",
+		"/home/oboylela/git/cruthu/cruthu-gl/camera/camera.hpp",
+		"/home/oboylela/git/cruthu/cruthu-gl/CMakeLists.txt",
+		"/home/oboylela/git/cruthu/cruthu-gl/camera/camera.cpp",
+		"/home/oboylela/git/cruthu/cruthu-gl/camera/CMakeLists.txt",
+		"/home/oboylela/git/cruthu/CMakeLists.txt",
+		"/home/oboylela/git/cruthu/cruthu-gl/camera/camera.c",
+		"/home/oboylela/git/cruthu/cruthu-gl/camera/camera.h",
+		"/home/oboylela/git/cruthu/cruthu/CMakeLists.txt",
+		"/home/oboylela/git/cruthu/cruthu-cli/CMakeLists.txt",
+		"/home/oboylela/git/cruthu/tutorial01.cpp",
+		"/home/oboylela/git/cruthu/cruthu-cli/main.cpp",
+		"/home/oboylela/git/cruthu/cruthu/cruthu.cpp",
+		"/home/oboylela/git/cruthu/cruthu/icosphere/icosphere.cpp",
+		"/home/oboylela/git/cruthu/cruthu/cruthu.hpp",
+		"/home/oboylela/git/cruthu/cruthu/cmake/FindGLM.cmake",
+		"/home/oboylela/git/cruthu/cruthu/icosphere/Icosphere.hpp",
 		"/home/oboylela/git/cruthu/src/gui.cpp",
 		"/home/oboylela/git/cruthu/include/Cruthu/camera.hpp",
 		"/home/oboylela/git/cruthu/include/Cruthu/gui.hpp",
 		"/home/oboylela/git/cruthu/src/main.cpp",
-		"/home/oboylela/git/cruthu/CMakeLists.txt",
 		"/home/oboylela/.scripts/bar_feeder.sh",
 		"/srv/intranet/database/migrations/2014_10_12_000000_create_users_table.php",
 		"/srv/intranet/vendor/symfony/http-kernel/Tests/HttpKernelTest.php",
@@ -158,13 +206,14 @@
 	],
 	"find":
 	{
-		"height": 23.0
+		"height": 34.0
 	},
 	"find_in_files":
 	{
 		"height": 106.0,
 		"where_history":
 		[
+			""
 		]
 	},
 	"find_state":
@@ -172,6 +221,13 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"Vec3",
+			"frag_colour",
+			"}\n",
+			"end",
+			"start",
+			"GLint",
+			"GLfloat",
 			"glPolygonMode",
 			"\n      ",
 			"wireframe"
@@ -182,6 +238,11 @@
 		"regex": false,
 		"replace_history":
 		[
+			"glm::vec3",
+			"end_gen",
+			"start_gen",
+			"int",
+			"float"
 		],
 		"reverse": false,
 		"show_context": true,
@@ -197,31 +258,62 @@
 			[
 				{
 					"buffer": 0,
-					"file": "CMakeLists.txt",
+					"file": "cruthu-gl/main.cpp",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2075,
+						"buffer_size": 9536,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								3730,
+								3730
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/CMake/CMake.sublime-syntax",
-							"translate_tabs_to_spaces": false
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 180.0,
+						"translation.y": 5434.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "cruthu-gl/camera.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4407,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1582,
+								1582
+							]
+						],
+						"settings":
+						{
+							"auto_name": "#include \"../Headers/Camera.h\"",
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
 					"type": "text"
 				}
 			]
@@ -229,11 +321,11 @@
 	],
 	"incremental_find":
 	{
-		"height": 23.0
+		"height": 34.0
 	},
 	"input":
 	{
-		"height": 29.0
+		"height": 36.0
 	},
 	"layout":
 	{
@@ -266,7 +358,7 @@
 	"project": "cruthu.sublime-project",
 	"replace":
 	{
-		"height": 42.0
+		"height": 72.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -304,7 +396,7 @@
 	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 272.0,
+	"side_bar_width": 75.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{
