@@ -1,32 +1,38 @@
 #include <cstdlib>
 #include <iostream>
+#include <chrono>
+#include <ctime>
+#include <glm/glm.hpp>
 
 #include <cruthu/cruthu.hpp>
+#include <cruthu/icosphere/icosphere.hpp>
 
 int main(int argc, char * argv[]) {
     cruthu::Version();
-
-    size_t world_size(40075000);
     
-    // cruthu::Cruthu dev = cruthu::Cruthu(world_size);
+    auto start_gen = std::chrono::high_resolution_clock::now();
+    size_t world_level(std::stoi(argv[1]));
+    std::vector<glm::vec3> colors;
+    std::vector<glm::vec3> indices;
+    cruthu::Icosphere dev = cruthu::Icosphere(world_level);
+    colors = dev.GetColor();
+    indices = dev.GetIndices();
     // dev.GenerateWorld();
 
-    // cruthu::voxel::Block *** temp = dev.GetWorld();
+    auto end_gen = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed_time = end_gen - start_gen;
+    auto gen_elapsed_nanoseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(elapsed_time).count();
+    auto gen_elapsed_milliseconds = gen_elapsed_nanoseconds / 1000000.0;
+    auto gen_elapsed_seconds = gen_elapsed_milliseconds / 1000.0;
 
-    // int flat_map[world_size][world_size];
+    std::time_t start_gen_time = std::chrono::high_resolution_clock::to_time_t(start_gen);
+    std::time_t end_gen_time = std::chrono::high_resolution_clock::to_time_t(end_gen);
 
-    // for(auto x = 0; x < world_size; ++x) {
-    // 	for(auto y = 0; y < world_size; ++y) {
-    // 		int sum = 0;
-    // 		for(auto z = 0; z < world_size; ++z) {
-    // 			sum += (temp[x][y][z].IsActive()) ? 0 : 1;
-    // 		}
-    // 		int color = 255 - sum;
-    // 		std::cout << "\033[38;5;" << color <<"m\u25A0\033[39m ";
-    // 	}
-    // 	std::cout << std::endl;
-
-    // }
+    std::cout << "Started at: " << std::ctime(&start_gen_time) << std::endl;
+    std::cout << "Finished at: " << std::ctime(&end_gen_time) << std::endl;
+    std::cout << "Elapsed time: " << gen_elapsed_seconds << "s\n";
+    std::cout << "Elapsed time: " << gen_elapsed_milliseconds << "ms\n";
+    std::cout << "Elapsed time: " << gen_elapsed_nanoseconds << "ns\n";
 
     return EXIT_SUCCESS;
 }

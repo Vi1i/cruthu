@@ -1,8 +1,11 @@
 #pragma once
 
+#include <vector>
+#include <glm/glm.hpp>
+
 // http://www-cs-students.stanford.edu/~amitp/game-programming/polygon-map-generation/
 #include <cruthu/config.hpp>
-#include <cruthu/voxel/block.hpp>
+#include <cruthu/icosphere/icosphere.hpp>
 
 namespace cruthu {
     void Version();
@@ -13,12 +16,12 @@ namespace cruthu {
     	~Cruthu();
 
     	void GenerateWorld();
-   		size_t GetSize();
-   		cruthu::voxel::Block *** GetWorld();
+   		size_t GetLevel();
+   		std::vector<glm::vec3> GetPoints();
 
 
     private:
-    	size_t m_size;
-    	cruthu::voxel::Block *** m_blocks;
+    	size_t level;
+    	std::vector<glm::vec3> points;
     };
 }
