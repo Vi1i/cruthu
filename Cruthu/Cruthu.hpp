@@ -4,8 +4,8 @@
 #include <glm/glm.hpp>
 
 // http://www-cs-students.stanford.edu/~amitp/game-programming/polygon-map-generation/
-#include <cruthu/config.hpp>
-#include <cruthu/icosphere/icosphere.hpp>
+//#include <cruthu/config.hpp>
+//#include <cruthu/icosphere/icosphere.hpp>
 
 namespace cruthu {
     void Version();

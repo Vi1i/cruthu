@@ -1,72 +1,77 @@
 cmake_minimum_required(VERSION 3.9)
-project(cruthu LANGUAGES CXX)
+project(CruthuCore)
 
-set(CRUTHU_MAJOR_VERSION 0)
-set(CRUTHU_MINOR_VERSION 1)
-set(CRUTHU_PATCH_VERSION 0)
-set(CRUTHU_TWEAK_VERSION 0)
-set(CRUTHU_VERSION
-    ${CRUTHU_MAJOR_VERSION}.${CRUTHU_MINOR_VERSION}.${CRUTHU_PATCH_VERSION}.${CRUTHU_TWEAK_VERSION}
-)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CRUTHUCORE_MAJOR_VERSION 0)
+set(CRUTHUCORE_MINOR_VERSION 1)
+set(CRUTHUCORE_PATCH_VERSION 0)
+set(CRUTHUCORE_VERSION
+    ${CRUTHUCORE_MAJOR_VERSION}.${CRUTHUCORE_MINOR_VERSION}.${CRUTHUCORE_PATCH_VERSION})
 
-if(WIN32 AND NOT CYGWIN)
-    set(DEF_INSTALL_CMAKE_DIR CMake)
-else()
-    set(DEF_INSTALL_CMAKE_DIR lib/CMake/Cruthu)
-endif()
-
+# Offer the user the choice of overriding the installation directories
 set(INSTALL_LIB_DIR lib CACHE PATH "Installation directory for libraries")
 set(INSTALL_BIN_DIR bin CACHE PATH "Installation directory for executables")
 set(INSTALL_INCLUDE_DIR include CACHE PATH "Installation directory for header files")
+
+if(WIN32 AND NOT CYGWIN)
+  set(DEF_INSTALL_CMAKE_DIR CMake)
+else()
+    set(DEF_INSTALL_CMAKE_DIR lib/CMake/CruthuCore)
+endif()
+
 set(INSTALL_CMAKE_DIR ${DEF_INSTALL_CMAKE_DIR} CACHE PATH "Installation directory for CMake files")
 
 # Make relative paths absolute (needed later on)
 foreach(p LIB BIN INCLUDE CMAKE)
-    set(var INSTALL_${p}_DIR)
-    if(NOT IS_ABSOLUTE ${${var}})
-        set(${var} ${CMAKE_INSTALL_PREFIX}/${${var}})
-    endif()
+  set(var INSTALL_${p}_DIR)
+  if(NOT IS_ABSOLUTE "${${var}}")
+    set(${var} "${CMAKE_INSTALL_PREFIX}/${${var}}")
+  endif()
 endforeach()
 
-# Set up include-directories
+# set up include-directories
 include_directories(
-    ${PROJECT_SOURCE_DIR}
-    ${PROJECT_BINARY_DIR}
-)
+  "${PROJECT_SOURCE_DIR}"
+  "${PROJECT_BINARY_DIR}")
 
-add_subdirectory(cruthu)
-add_subdirectory(cruthu-cli)
-#add_subdirectory(cruthu-gl)
-#add_subdirectory(cruthu-vulkan)
+# Add sub-directories
+add_subdirectory(Cruthu)
+add_subdirectory(TeraGenerate)
+add_subdirectory(Cruthu-cli)
 
-#export(TARGETS cruthu cruthu-gl cruthu-cli FILE ${PROJECT_BINARY_DIR}/CruthuTargets.cmake)
-export(TARGETS cruthu cruthu-cli FILE ${PROJECT_BINARY_DIR}/CruthuTargets.cmake)
-export(PACKAGE Cruthu)
+# The interesting stuff goes here
+# ===============================
 
-file(RELATIVE_PATH REL_INCLUDE_DIR ${INSTALL_CMAKE_DIR} ${INSTALL_INCLUDE_DIR})
+# Add all targets to the build-tree export set
+export(TARGETS CruthuCore CruthuCoreTeraGenerate
+    FILE "${PROJECT_BINARY_DIR}/CruthuCoreTargets.cmake")
 
-set(CONF_INCLUDE_DIRS ${PROJECT_SOURCE_DIR} ${PROJECT_BINARY_DIR})
-configure_file(CruthuConfig.cmake.in
-    ${PROJECT_BINARY_DIR}/CruthuConfig.cmake @ONLY
-)
+# Export the package for use from the build-tree
+# (this registers the build-tree with a global CMake-registry)
+export(PACKAGE CruthuCore)
 
-set(CONF_INCLUDE_DIRS ${CRUTHU_CMAKE_DIR}/${REL_INCLUDE_DIR})
-configure_file(CruthuConfig.cmake.in
-    ${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CruthuConfig.cmake @ONLY
-)
+# Create the FooBarConfig.cmake and FooBarConfigVersion files
+file(RELATIVE_PATH REL_INCLUDE_DIR "${INSTALL_CMAKE_DIR}"
+   "${INSTALL_INCLUDE_DIR}")
+# ... for the build tree
+set(CONF_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}" "${PROJECT_BINARY_DIR}")
+configure_file(CruthuCoreConfig.cmake.in
+    "${PROJECT_BINARY_DIR}/CruthuCoreConfig.cmake" @ONLY)
+# ... for the install tree
+set(CONF_INCLUDE_DIRS "\${CRUTHUCORE_CMAKE_DIR}/${REL_INCLUDE_DIR}")
+configure_file(CruthuCoreConfig.cmake.in
+    "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CruthuCoreConfig.cmake" @ONLY)
+# ... for both
+configure_file(CruthuCoreConfigVersion.cmake.in
+    "${PROJECT_BINARY_DIR}/CruthuCoreConfigVersion.cmake" @ONLY)
 
-configure_file(CruthuConfigVersion.cmake.in
-    ${PROJECT_BINARY_DIR}/CruthuConfigVersion.cmake @ONLY
-)
-
+# Install the FooBarConfig.cmake and FooBarConfigVersion.cmake
 install(FILES
-    ${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CruthuConfig.cmake
-    ${PROJECT_BINARY_DIR}/CruthuConfigVersion.cmake
-    DESTINATION ${INSTALL_CMAKE_DIR} COMPONENT dev
-)
+    "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CruthuCoreConfig.cmake"
+    "${PROJECT_BINARY_DIR}/CruthuCoreConfigVersion.cmake"
+  DESTINATION "${INSTALL_CMAKE_DIR}" COMPONENT dev)
 
-install(EXPORT CruthuTargets DESTINATION
-    ${INSTALL_CMAKE_DIR} COMPONENT dev
-)
+# Install the export set for use with the install-tree
+install(EXPORT CruthuCoreTargets DESTINATION
+  "${INSTALL_CMAKE_DIR}" COMPONENT dev)
+
