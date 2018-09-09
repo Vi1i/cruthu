@@ -38,9 +38,11 @@ include_directories(
 
 add_subdirectory(cruthu)
 add_subdirectory(cruthu-cli)
-add_subdirectory(cruthu-gl)
+#add_subdirectory(cruthu-gl)
+#add_subdirectory(cruthu-vulkan)
 
-export(TARGETS cruthu cruthu-gl cruthu-cli FILE ${PROJECT_BINARY_DIR}/CruthuTargets.cmake)
+#export(TARGETS cruthu cruthu-gl cruthu-cli FILE ${PROJECT_BINARY_DIR}/CruthuTargets.cmake)
+export(TARGETS cruthu cruthu-cli FILE ${PROJECT_BINARY_DIR}/CruthuTargets.cmake)
 export(PACKAGE Cruthu)
 
 file(RELATIVE_PATH REL_INCLUDE_DIR ${INSTALL_CMAKE_DIR} ${INSTALL_INCLUDE_DIR})
