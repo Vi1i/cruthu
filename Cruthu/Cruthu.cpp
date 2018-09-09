@@ -1,11 +1,12 @@
 #include <iostream>
 #include <random>
 
-#include <cruthu/cruthu.hpp>
+#include "Cruthu.hpp"
 
 namespace cruthu {
     void Version() {
-        std::cout << "Version: " << CRUTHU_VERSION_STRING << std::endl;
+        //std::cout << "Version: " << CRUTHU_VERSION_STRING << std::endl;
+        std::cout << "Version: UNKNOWN" << std::endl;
     }
 
     Cruthu::Cruthu(size_t level) {
@@ -23,5 +24,6 @@ namespace cruthu {
     }
 
     std::vector<glm::vec3> Cruthu::GetPoints() {
+        return this->points;
     }
 }
