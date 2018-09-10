@@ -3,6 +3,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 configure_file(CruthuConfig.hpp.in "${CMAKE_CURRENT_BINARY_DIR}/CruthuConfig.hpp" @ONLY)
 
+find_package(glm REQUIRED)
+
 add_library(CruthuCore SHARED
     Cruthu.cpp
     Tera.cpp

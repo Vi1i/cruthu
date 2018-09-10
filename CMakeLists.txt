@@ -8,7 +8,6 @@ set(CRUTHUCORE_PATCH_VERSION 0)
 set(CRUTHUCORE_VERSION
     ${CRUTHUCORE_MAJOR_VERSION}.${CRUTHUCORE_MINOR_VERSION}.${CRUTHUCORE_PATCH_VERSION})
 
-# Offer the user the choice of overriding the installation directories
 set(INSTALL_LIB_DIR lib CACHE PATH "Installation directory for libraries")
 set(INSTALL_BIN_DIR bin CACHE PATH "Installation directory for executables")
 set(INSTALL_INCLUDE_DIR include CACHE PATH "Installation directory for header files")
@@ -50,7 +49,7 @@ export(TARGETS CruthuCore CruthuCoreTeraGenerate
 # (this registers the build-tree with a global CMake-registry)
 export(PACKAGE CruthuCore)
 
-# Create the FooBarConfig.cmake and FooBarConfigVersion files
+# Create the CruthuCoreConfig.cmake and CruthuCoreConfigVersion files
 file(RELATIVE_PATH REL_INCLUDE_DIR "${INSTALL_CMAKE_DIR}"
    "${INSTALL_INCLUDE_DIR}")
 # ... for the build tree
@@ -65,7 +64,7 @@ configure_file(CruthuCoreConfig.cmake.in
 configure_file(CruthuCoreConfigVersion.cmake.in
     "${PROJECT_BINARY_DIR}/CruthuCoreConfigVersion.cmake" @ONLY)
 
-# Install the FooBarConfig.cmake and FooBarConfigVersion.cmake
+# Install the CruthuCoreConfig.cmake and CruthuCoreConfigVersion.cmake
 install(FILES
     "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CruthuCoreConfig.cmake"
     "${PROJECT_BINARY_DIR}/CruthuCoreConfigVersion.cmake"
