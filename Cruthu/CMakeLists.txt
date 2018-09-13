@@ -1,21 +1,23 @@
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-configure_file(CruthuConfig.hpp.in "${CMAKE_CURRENT_BINARY_DIR}/CruthuConfig.hpp" @ONLY)
 
 find_package(glm REQUIRED)
 
 add_library(CruthuCore SHARED
     Cruthu.cpp
-    Tera.cpp
+    Config.cpp
     Point.cpp
     CruthuConfig.hpp.in
+)
+
+target_link_libraries(CruthuCore
+    stdc++fs
 )
 
 set_target_properties(CruthuCore PROPERTIES
     VERSION 0.1.0
     SOVERSION 1
-    PUBLIC_HEADER "Cruthu.hpp;IGenerate.hpp;DLLoader.hpp;Point.hpp;${CMAKE_CURRENT_BINARY_DIR}/CruthuConfig.hpp")
+    PUBLIC_HEADER "Config.hpp;Cruthu.hpp;IGenerate.hpp;ITera.hpp;IDLLoader.hpp;Point.hpp;IIndexer.hpp")
 
 install(TARGETS CruthuCore
     EXPORT CruthuCoreTargets

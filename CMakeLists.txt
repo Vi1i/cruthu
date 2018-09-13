@@ -35,14 +35,15 @@ include_directories(
 
 # Add sub-directories
 add_subdirectory(Cruthu)
-add_subdirectory(TeraGenerate)
-add_subdirectory(Cruthu-cli)
+add_subdirectory(TeraCore)
+add_subdirectory(IndexerCore)
+add_subdirectory(CruthuCli)
 
 # The interesting stuff goes here
 # ===============================
 
 # Add all targets to the build-tree export set
-export(TARGETS CruthuCore CruthuCoreTeraGenerate
+export(TARGETS CruthuCore CruthuCoreTera CruthuCoreIndexer
     FILE "${PROJECT_BINARY_DIR}/CruthuCoreTargets.cmake")
 
 # Export the package for use from the build-tree

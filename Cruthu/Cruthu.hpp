@@ -12,16 +12,10 @@ namespace cruthu {
 
     class  Cruthu {
     public:
-    	Cruthu(size_t size);
-    	~Cruthu();
+    	Cruthu() = default;
+    	~Cruthu() = default;
 
-    	void GenerateWorld();
-   		size_t GetLevel();
-   		std::vector<glm::vec3> GetPoints();
-
-
+        void Initialize();
     private:
-    	size_t level;
-    	std::vector<glm::vec3> points;
     };
 }
