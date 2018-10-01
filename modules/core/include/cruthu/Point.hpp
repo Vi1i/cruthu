@@ -4,21 +4,23 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
 
 namespace Cruthu {
 class Point {
 public:
-    Point() = default;
+    Point() : mTag(boost::uuids::random_generator()()) {};
     ~Point() = default;
 
-    void SetID(unsigned int id);
-    unsigned int GetID();
+    boost::uuids::uuid GetTag();
+    bool operator==(Cruthu::Point const& rhs) const;
 
     void SetNeighbor(std::shared_ptr<Cruthu::Point> neighbor);
     std::vector<std::shared_ptr<Cruthu::Point>> GetNeighbors();
 
 private:
-    unsigned int mID;
+    boost::uuids::uuid mTag;
     std::vector<std::shared_ptr<Cruthu::Point>> mNeighbors;
 };
 } // namespace Cruthu

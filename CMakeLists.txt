@@ -13,7 +13,7 @@ set(INSTALL_BIN_DIR bin CACHE PATH "Installation directory for executables")
 set(INSTALL_INCLUDE_DIR include CACHE PATH "Installation directory for header files")
 
 if(WIN32 AND NOT CYGWIN)
-  set(DEF_INSTALL_CMAKE_DIR CMake)
+    set(DEF_INSTALL_CMAKE_DIR CMake)
 else()
     set(DEF_INSTALL_CMAKE_DIR lib/CMake/CruthuCore)
 endif()
@@ -22,16 +22,16 @@ set(INSTALL_CMAKE_DIR ${DEF_INSTALL_CMAKE_DIR} CACHE PATH "Installation director
 
 # Make relative paths absolute (needed later on)
 foreach(p LIB BIN INCLUDE CMAKE)
-  set(var INSTALL_${p}_DIR)
-  if(NOT IS_ABSOLUTE "${${var}}")
-    set(${var} "${CMAKE_INSTALL_PREFIX}/${${var}}")
-  endif()
+    set(var INSTALL_${p}_DIR)
+    if(NOT IS_ABSOLUTE "${${var}}")
+        set(${var} "${CMAKE_INSTALL_PREFIX}/${${var}}")
+    endif()
 endforeach()
 
 # set up include-directories
 include_directories(
-  "${PROJECT_SOURCE_DIR}"
-  "${PROJECT_BINARY_DIR}")
+    "${PROJECT_SOURCE_DIR}"
+    "${PROJECT_BINARY_DIR}")
 
 # Add sub-directories
 add_subdirectory(modules/core)
@@ -53,7 +53,7 @@ export(PACKAGE CruthuCore)
 
 # Create the CruthuCoreConfig.cmake and CruthuCoreConfigVersion files
 file(RELATIVE_PATH REL_INCLUDE_DIR "${INSTALL_CMAKE_DIR}"
-   "${INSTALL_INCLUDE_DIR}")
+    "${INSTALL_INCLUDE_DIR}")
 # ... for the build tree
 set(CONF_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}" "${PROJECT_BINARY_DIR}")
 configure_file(CruthuCoreConfig.cmake.in
@@ -70,9 +70,9 @@ configure_file(CruthuCoreConfigVersion.cmake.in
 install(FILES
     "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CruthuCoreConfig.cmake"
     "${PROJECT_BINARY_DIR}/CruthuCoreConfigVersion.cmake"
-  DESTINATION "${INSTALL_CMAKE_DIR}" COMPONENT dev)
+    DESTINATION "${INSTALL_CMAKE_DIR}" COMPONENT dev)
 
 # Install the export set for use with the install-tree
 install(EXPORT CruthuCoreTargets DESTINATION
-  "${INSTALL_CMAKE_DIR}" COMPONENT dev)
+    "${INSTALL_CMAKE_DIR}" COMPONENT dev)
 

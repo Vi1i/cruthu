@@ -5,13 +5,13 @@ void Cruthu::Point::SetNeighbor(std::shared_ptr<Cruthu::Point> neighbor) {
 }
 
 std::vector<std::shared_ptr<Cruthu::Point>> Cruthu::Point::GetNeighbors() {
-        return this->mNeighbors;
+    return this->mNeighbors;
 }
 
-unsigned int Cruthu::Point::GetID() {
-    return this->mID;
+boost::uuids::uuid Cruthu::Point::GetTag() {
+    return this->mTag;
 }
 
-void Cruthu::Point::SetID(unsigned int id) {
-    this->mID = id;
+bool Cruthu::Point::operator==(Cruthu::Point const& rhs) const {
+    return this->mTag == rhs.mTag;
 }
