@@ -1,7 +1,4 @@
 #include <iostream>
 #include <random>
 
-#include "Cruthu.hpp"
-
-namespace cruthu {
-}
+#include <cruthu/Cruthu.hpp>

@@ -10,7 +10,7 @@ class IGenerate {
 public:
     virtual ~IGenerate() = default;
 
-    virtual std::vector<Cruthu::Point> Create() = 0;
+    virtual std::vector<std::shared_ptr<Cruthu::Point>> Create() = 0;
 };
 } // namespace Cruthu
 #endif

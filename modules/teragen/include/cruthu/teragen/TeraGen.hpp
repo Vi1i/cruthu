@@ -1,30 +1,29 @@
-#ifndef CRUTHU_GENERATE_HPP
-#define CRUTHU_GENERATE_HPP
+#ifndef CRUTHU_TERAGEN_HPP
+#define CRUTHU_TERAGEN_HPP
 
-#include "Cruthu/IGenerate.hpp"
-#include "Cruthu/Point.hpp"
+#include <cruthu/IGenerate.hpp>
+#include <cruthu/Point.hpp>
 
 #include <vector>
 
 namespace Cruthu {
-class Generate : public IGenerate {
+class TeraGen : public IGenerate {
 public:
-    Generate() = default;
-    ~Generate() = default;
+    TeraGen() = default;
+    ~TeraGen() = default;
     
-    virtual std::vector<Cruthu::Point> Create();
+    virtual std::vector<std::shared_ptr<Cruthu::Point>> Create();
 
 
 private:
-    std::vector<Cruthu::Point> mPoints;
-    std::vector<Cruthu::Point> mCreate();
+    std::vector<std::shared_ptr<Cruthu::Point>> mPoints;
 };
 extern "C" {
-	Cruthu::Generate * allocator() {
-		return new Cruthu::Generate();
+	Cruthu::TeraGen * allocator() {
+		return new Cruthu::TeraGen();
 	}
 
-	void deleter(Cruthu::Generate * ptr) {
+	void deleter(Cruthu::TeraGen * ptr) {
 		delete ptr;
 	}
 }

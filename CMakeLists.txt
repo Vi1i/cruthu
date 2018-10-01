@@ -34,10 +34,11 @@ include_directories(
   "${PROJECT_BINARY_DIR}")
 
 # Add sub-directories
-add_subdirectory(Cruthu)
-add_subdirectory(TeraCore)
-add_subdirectory(IndexerCore)
-add_subdirectory(CruthuCli)
+add_subdirectory(modules/core)
+add_subdirectory(modules/tera)
+add_subdirectory(modules/teragen)
+add_subdirectory(modules/indexer)
+add_subdirectory(modules/cli)
 
 # The interesting stuff goes here
 # ===============================

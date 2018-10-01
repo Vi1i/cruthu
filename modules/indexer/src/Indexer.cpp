@@ -1,4 +1,4 @@
-#include "Indexer.hpp"
+#include <cruthu/indexer/Indexer.hpp>
 
 #include <vector>
 #include <memory>

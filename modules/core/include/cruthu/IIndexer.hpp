@@ -1,7 +1,7 @@
 #ifndef CRUTHU_IINDEXER_HPP
 #define CRUTHU_IINDEXER_HPP
 
-#include "Cruthu/Point.hpp"
+#include <cruthu/Point.hpp>
 
 #include <memory>
 #include <vector>

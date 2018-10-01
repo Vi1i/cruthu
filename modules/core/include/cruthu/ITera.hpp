@@ -1,8 +1,8 @@
 #ifndef CRUTHU_ITERA_HPP
 #define CRUTHU_ITERA_HPP
 
-#include "Cruthu/IIndexer.hpp"
-#include "Point.hpp"
+#include <cruthu/IIndexer.hpp>
+#include <cruthu/Point.hpp>
 
 #include <memory>
 #include <vector>

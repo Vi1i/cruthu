@@ -1,6 +1,6 @@
-#include "Cruthu/Cruthu.hpp"
-#include "Cruthu/DLLoader.hpp"
-#include "Cruthu/Config.hpp"
+#include <cruthu/Cruthu.hpp>
+#include <cruthu/DLLoader.hpp>
+#include <cruthu/Config.hpp>
 
 
 #include <cstdlib>

@@ -1,7 +1,9 @@
 #ifndef CRUTHU_POINT_HPP
 #define CRUTHU_POINT_HPP
 
+#include <string>
 #include <memory>
+#include <vector>
 
 namespace Cruthu {
 class Point {
@@ -9,12 +11,15 @@ public:
     Point() = default;
     ~Point() = default;
 
+    void SetID(unsigned int id);
+    unsigned int GetID();
+
+    void SetNeighbor(std::shared_ptr<Cruthu::Point> neighbor);
+    std::vector<std::shared_ptr<Cruthu::Point>> GetNeighbors();
+
 private:
-    std::shared_ptr<Cruthu::Point> mAlpha;
-    std::shared_ptr<Cruthu::Point> mBeta;
-    std::shared_ptr<Cruthu::Point> mGamma;
-    std::shared_ptr<Cruthu::Point> mDelta;
-    std::shared_ptr<Cruthu::Point> mEpsilon;
+    unsigned int mID;
+    std::vector<std::shared_ptr<Cruthu::Point>> mNeighbors;
 };
 } // namespace Cruthu
 #endif

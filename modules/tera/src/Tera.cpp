@@ -1,4 +1,4 @@
-#include "Tera.hpp"
+#include <cruthu/tera/Tera.hpp>
 
 #include <vector>
 #include <memory>

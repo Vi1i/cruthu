@@ -1,4 +1,4 @@
-#include "Config.hpp"
+#include <cruthu/Config.hpp>
 
 #include <cstdlib>
 #include <iostream>

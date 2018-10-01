@@ -1,8 +1,8 @@
-#ifndef CRUTHU_TERA_CORE_HPP
-#define CRUTHU_TERA_CORE_HPP
+#ifndef CRUTHU_INDEXER_HPP
+#define CRUTHU_INDEXER_HPP
 
-#include "Cruthu/IIndexer.hpp"
-#include "Cruthu/Point.hpp"
+#include <cruthu/IIndexer.hpp>
+#include <cruthu/Point.hpp>
 
 #include <vector>
 #include <memory>
