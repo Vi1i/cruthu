@@ -9,6 +9,7 @@
 #include <filesystem>
 
 const std::string Cruthu::Config::Index::TERA = "ITera";
+const std::string Cruthu::Config::Index::TERAGEN = "ITeraGen";
 const std::string Cruthu::Config::Index::INDEXER = "IIndexer";
 const std::string Cruthu::Config::Index::THREAD_COUNT = "Thread_Count";
 
@@ -40,6 +41,8 @@ Cruthu::Config::Config(std::string filename) {
                 std::vector<std::string> key_val(Cruthu::split(line, '='));
                 if(key_val[0] == Cruthu::Config::Index::TERA) {
                     this->mConf[Cruthu::Config::Index::TERA] = key_val[1];
+                }else if(key_val[0] == Cruthu::Config::Index::TERAGEN) {
+                    this->mConf[Cruthu::Config::Index::TERAGEN] = key_val[1];
                 }else if(key_val[0] == Cruthu::Config::Index::INDEXER) {
                     this->mConf[Cruthu::Config::Index::INDEXER] = key_val[1];
                 }else if(key_val[0] == Cruthu::Config::Index::THREAD_COUNT) {
@@ -55,6 +58,7 @@ Cruthu::Config::Config(std::string filename) {
         //TODO: SetDefaults
         //TODO: (Vi1i) Maybe relook the whole enum thing.
         this->mConf[Cruthu::Config::Index::TERA] = "libCruthuCoreTera.so";
+        this->mConf[Cruthu::Config::Index::TERAGEN] = "libCruthuCoreTeraGen.so";
         this->mConf[Cruthu::Config::Index::INDEXER] = "libCruthuCoreTera.so";
     }
 }

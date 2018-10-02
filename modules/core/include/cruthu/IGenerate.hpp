@@ -1,7 +1,7 @@
 #ifndef CRUTHU_IGENERATE_HPP
 #define CRUTHU_IGENERATE_HPP
 
-#include "Point.hpp"
+#include <cruthu/Point.hpp>
 
 #include <vector>
 

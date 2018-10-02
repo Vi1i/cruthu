@@ -11,10 +11,12 @@ namespace Cruthu {
 class Point {
 public:
     Point() : mTag(boost::uuids::random_generator()()) {};
+    Point(Cruthu::Point const & rhs) : mTag(rhs.mTag), mNeighbors(rhs.mNeighbors) {};
     ~Point() = default;
 
     boost::uuids::uuid GetTag();
     bool operator==(Cruthu::Point const& rhs) const;
+    void operator=(Cruthu::Point const& rhs);
 
     void SetNeighbor(std::shared_ptr<Cruthu::Point> neighbor);
     std::vector<std::shared_ptr<Cruthu::Point>> GetNeighbors();

@@ -1,5 +1,7 @@
 #include <cruthu/Point.hpp>
 
+#include <boost/uuid/uuid.hpp>
+
 void Cruthu::Point::SetNeighbor(std::shared_ptr<Cruthu::Point> neighbor) {
     this->mNeighbors.push_back(neighbor);
 }
@@ -14,4 +16,9 @@ boost::uuids::uuid Cruthu::Point::GetTag() {
 
 bool Cruthu::Point::operator==(Cruthu::Point const& rhs) const {
     return this->mTag == rhs.mTag;
+}
+
+void Cruthu::Point::operator=(Cruthu::Point const& rhs) {
+    this->mTag = rhs.mTag;
+    this->mNeighbors = rhs.mNeighbors;
 }

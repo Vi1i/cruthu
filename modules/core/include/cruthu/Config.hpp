@@ -28,6 +28,7 @@ class Config {
 public:
     struct Index {
         const static std::string TERA;
+        const static std::string TERAGEN;
         const static std::string INDEXER;
         const static std::string THREAD_COUNT;
     };

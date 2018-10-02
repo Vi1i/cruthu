@@ -1,6 +1,7 @@
 #include <cruthu/Cruthu.hpp>
 #include <cruthu/DLLoader.hpp>
 #include <cruthu/Config.hpp>
+#include <cruthu/IGenerate.hpp>
 
 
 #include <cstdlib>
@@ -11,31 +12,16 @@
 #include <iterator>
 #include <filesystem>
 #include <algorithm>
+#include <iomanip>
 
-//void Generate(Cruthu::DLLoader<Cruthu::IGenerate>& dlloader) {
-//    std::shared_ptr<Cruthu::IGenerate> teraGen = dlloader.DLGetInstance();
-//
-//	teraGen.get()->Create();
-//}
+void Generate(Cruthu::DLLoader<Cruthu::IGenerate>& dlloader) {
+    std::shared_ptr<Cruthu::IGenerate> teraGen = dlloader.DLGetInstance();
 
-int main(int argc, char ** argv) {
-    Cruthu::Config conf(argv[1]);
+	teraGen.get()->Create();
+}
 
-    std::vector<std::string> sharedLibraryNames;
-    sharedLibraryNames.push_back(conf.GetConf(Cruthu::Config::Index::TERA));
-    sharedLibraryNames.push_back(conf.GetConf(Cruthu::Config::Index::INDEXER));
-
-    std::vector<std::string> LD_LIBRARY_PATHS;
-    LD_LIBRARY_PATHS.push_back("/lib");
-    LD_LIBRARY_PATHS.push_back("/usr/lib");
-
-    std::vector<std::string> env_l;
-    env_l = Cruthu::split(std::getenv("LD_LIBRARY_PATH"), ':');
-    if(!env_l.empty()) {
-        LD_LIBRARY_PATHS.insert(std::end(LD_LIBRARY_PATHS), std::begin(env_l), std::end(env_l));
-    }
-
-    std::vector<std::string> sharedLibraryPaths;
+std::map<std::string, std::string> Search(std::vector<std::string> LD_LIBRARY_PATHS, std::map<std::string, std::string> sharedLibraryNames) {
+    std::map<std::string, std::string> sharedLibraryPaths;
     for(const auto & elm : LD_LIBRARY_PATHS) {
         if(elm.empty()) {
             continue;
@@ -47,8 +33,8 @@ int main(int argc, char ** argv) {
                 }
                 auto so = p.path();
                 for(const auto sharedLibraryName :sharedLibraryNames) {
-                    if(so.filename() == sharedLibraryName) {
-                        sharedLibraryPaths.push_back(so);
+                    if(so.filename() == sharedLibraryName.second) {
+                        sharedLibraryPaths[sharedLibraryName.first] = so;
                     }
                 }
             }
@@ -57,10 +43,47 @@ int main(int argc, char ** argv) {
         }
     }
 
-    std::sort(sharedLibraryPaths.begin(), sharedLibraryPaths.end());
-    sharedLibraryPaths.erase(unique(sharedLibraryPaths.begin(), sharedLibraryPaths.end()), sharedLibraryPaths.end());
+    return sharedLibraryPaths;
+}
+
+int main(int argc, char ** argv) {
+    Cruthu::Config conf(argv[1]);
+
+    std::map<std::string, std::string> sharedLibraryNames;
+    sharedLibraryNames[Cruthu::Config::Index::TERA] = conf.GetConf(Cruthu::Config::Index::TERA);
+    sharedLibraryNames[Cruthu::Config::Index::TERAGEN] = conf.GetConf(Cruthu::Config::Index::TERAGEN);
+    sharedLibraryNames[Cruthu::Config::Index::INDEXER] = conf.GetConf(Cruthu::Config::Index::INDEXER);
+
+    std::vector<std::string> LD_LIBRARY_PATHS;
+    LD_LIBRARY_PATHS.push_back("/lib");
+    LD_LIBRARY_PATHS.push_back("/usr/lib");
+
+    std::vector<std::string> env_l;
+    env_l = Cruthu::split(std::getenv("LD_LIBRARY_PATH"), ':');
+    if(!env_l.empty()) {
+        LD_LIBRARY_PATHS.insert(std::end(LD_LIBRARY_PATHS), std::begin(env_l), std::end(env_l));
+    }
+
+    std::map<std::string, std::string> sharedLibraryPaths = Search(LD_LIBRARY_PATHS, sharedLibraryNames);
+    std::cout << "-----------------------------------------------------------------------------" << std::endl;
+    std::cout << "|" << std::internal << std::setw(10) << std::setfill(' ') << "PLUGIN";
+    std::cout << std::internal << std::setw(3) << " | ";
+    std::cout << std::left << std::setw(10) << std::setfill(' ') << "Path" << std::endl;
+    std::cout << "-----------------------------------------------------------------------------" << std::endl;
     for(const auto sharedLibraryPath : sharedLibraryPaths) {
-        std::cout << sharedLibraryPath << std::endl;
+        std::cout <<"|" << std::right << std::setw(10) << std::setfill(' ') << sharedLibraryPath.first;
+        std::cout << std::setw(3) << " | ";
+        std::cout << std::left << std::setw(10) << std::setfill(' ') << sharedLibraryPath.second << std::endl;
+    }
+    std::cout << "-----------------------------------------------------------------------------" << std::endl;
+
+    for(const auto sharedLibraryPath : sharedLibraryPaths) {
+        if(sharedLibraryPath.first == Cruthu::Config::Index::TERAGEN) {
+            Cruthu::DLLoader<Cruthu::IGenerate> dlloader(sharedLibraryPath.second);
+            dlloader.DLOpenLib();
+            Generate(dlloader);
+            dlloader.DLCloseLib();
+        }
     }
 
     return EXIT_SUCCESS;

@@ -14,7 +14,6 @@ public:
     
     virtual std::vector<std::shared_ptr<Cruthu::Point>> Create();
 
-
 private:
     std::vector<std::shared_ptr<Cruthu::Point>> mPoints;
 };
