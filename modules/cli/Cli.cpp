@@ -17,7 +17,8 @@
 void Generate(Cruthu::DLLoader<Cruthu::IGenerate>& dlloader) {
     std::shared_ptr<Cruthu::IGenerate> teraGen = dlloader.DLGetInstance();
 
-	teraGen.get()->Create();
+	size_t fSize = teraGen.get()->Create().size();
+    std::cout << "Node Count: " << fSize << std::endl;
 }
 
 std::map<std::string, std::string> Search(std::vector<std::string> LD_LIBRARY_PATHS, std::map<std::string, std::string> sharedLibraryNames) {
