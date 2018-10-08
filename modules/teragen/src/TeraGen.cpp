@@ -2,68 +2,107 @@
 #include <boost/uuid/uuid_io.hpp>
 
 #include <iostream>
+#include <iomanip>
+#include <limits>
+#include <chrono>
 
-namespace {
-    std::vector<std::shared_ptr<Cruthu::Point>> Recurse(unsigned int level, const std::vector<std::shared_ptr<Cruthu::Point>>& origin) {
-        std::shared_ptr<Cruthu::Point> start = origin.at(0);
-        std::cout << boost::uuids::to_string(start.get()->GetTag()) << std::endl;
-        for(auto const& nP : start.get()->GetNeighbors()) {
-            std::cout << "\t" << nP->GetTag() << std::endl;
-        }
-        return origin;
+void Cruthu::TeraGen::Expand(long double level) {
+    double long size(std::pow(4, level));
+    if(size == HUGE_VAL) {
+        size = std::numeric_limits<long double>::max();
     }
+
+    std::cout << "Size: " << size << "x" << size << std::endl;
+    auto start = std::chrono::high_resolution_clock::now();
+    std::vector<std::vector<std::shared_ptr<Cruthu::Point>>> points(size);
+    for(auto y = 0; y < size; ++y) {
+        std::cout << "\rInitializing: " << std::fixed << std::setprecision(5) << (y/size) * 100.0 << "%" << std::flush;
+        std::vector<std::shared_ptr<Cruthu::Point>> temp;
+        temp.reserve(size);
+        for(auto x = 0; x < size; ++x) {
+            temp.push_back(std::shared_ptr<Cruthu::Point>(new Cruthu::Point()));
+        }
+        points[y] = temp;
+    }
+    auto finish = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed = finish - start;
+    std::cout << "\rInitializing: 100.00%, " << elapsed.count() << "s" << std::endl;
+
+    start = std::chrono::high_resolution_clock::now();
+    for(auto y = 0; y < size; ++y) {
+        bool TOP = false;
+        bool BOTTOM = false;
+        if(y == 0) {
+            TOP = true;
+        }else if(y == size - 1) {
+            BOTTOM = true;
+        }
+
+        std::cout << "\rConnecting: " << std::fixed << std::setprecision(5) << (y/size) * 100.0 << "%" << std::flush;
+        for(auto x = 0; x < size; ++x) {
+            bool LEFT = false;
+            bool RIGHT = false;
+            if(x == 0) {
+                LEFT = true;
+            }else if(x == size - 1) {
+                RIGHT = true;
+            }
+
+            std::shared_ptr<Cruthu::Point> cur(points[y][x]);
+            if(TOP && LEFT) {
+                cur.get()->SetNeighbor(points.at(y).at(x + 1));
+                cur.get()->SetNeighbor(points.at(y + 1).at(x));
+            }else if(TOP && RIGHT) {
+                cur.get()->SetNeighbor(points.at(y).at(x - 1));
+                cur.get()->SetNeighbor(points.at(y + 1).at(x));
+            }else if(BOTTOM && LEFT) {
+                cur.get()->SetNeighbor(points.at(y).at(x + 1));
+                cur.get()->SetNeighbor(points.at(y - 1).at(x));
+            }else if(BOTTOM && RIGHT) {
+                cur.get()->SetNeighbor(points.at(y).at(x - 1));
+                cur.get()->SetNeighbor(points.at(y - 1).at(x));
+            }else if(TOP) {
+                cur.get()->SetNeighbor(points.at(y).at(x + 1));
+                cur.get()->SetNeighbor(points.at(y).at(x - 1));
+                cur.get()->SetNeighbor(points.at(y + 1).at(x));
+            }else if(BOTTOM) {
+                cur.get()->SetNeighbor(points.at(y).at(x + 1));
+                cur.get()->SetNeighbor(points.at(y).at(x - 1));
+                cur.get()->SetNeighbor(points.at(y - 1).at(x));
+            }else if(LEFT) {
+                cur.get()->SetNeighbor(points.at(y).at(x + 1));
+                cur.get()->SetNeighbor(points.at(y + 1).at(x));
+                cur.get()->SetNeighbor(points.at(y - 1).at(x));
+            }else if(RIGHT) {
+                cur.get()->SetNeighbor(points.at(y).at(x - 1));
+                cur.get()->SetNeighbor(points.at(y + 1).at(x));
+                cur.get()->SetNeighbor(points.at(y - 1).at(x));
+            }else{
+                cur.get()->SetNeighbor(points.at(y).at(x - 1));
+                cur.get()->SetNeighbor(points.at(y).at(x + 1));
+                cur.get()->SetNeighbor(points.at(y + 1).at(x));
+                cur.get()->SetNeighbor(points.at(y - 1).at(x));
+            }
+        }
+    }
+    finish = std::chrono::high_resolution_clock::now();
+    elapsed = finish - start;
+    std::cout << "\rConnecting: 100.00%, " << elapsed.count() << "s" << std::endl;
+
+    start = std::chrono::high_resolution_clock::now();
+    for(auto y = 0; y < size; ++y) {
+        std::cout << "\rUnloading: " << std::fixed << std::setprecision(5) << (y/size) * 100.0 << "%" << std::flush;
+        for(auto x = 0; x < size; ++x) {
+            this->mPoints.push_back(points.at(y).at(x));
+        }
+    }
+    finish = std::chrono::high_resolution_clock::now();
+    elapsed = finish - start;
+    std::cout << "\rUnloading: 100.00%, " << elapsed.count() << "s" << std::endl;
+
 }
 
 std::vector<std::shared_ptr<Cruthu::Point>> Cruthu::TeraGen::Create() {
-    std::shared_ptr<Cruthu::Point> one = std::shared_ptr<Cruthu::Point>(new Cruthu::Point());
-    std::shared_ptr<Cruthu::Point> two = std::shared_ptr<Cruthu::Point>(new Cruthu::Point());
-    std::shared_ptr<Cruthu::Point> three = std::shared_ptr<Cruthu::Point>(new Cruthu::Point());
-    std::shared_ptr<Cruthu::Point> four = std::shared_ptr<Cruthu::Point>(new Cruthu::Point());
-    std::shared_ptr<Cruthu::Point> five = std::shared_ptr<Cruthu::Point>(new Cruthu::Point());
-    std::shared_ptr<Cruthu::Point> six = std::shared_ptr<Cruthu::Point>(new Cruthu::Point());
-    std::shared_ptr<Cruthu::Point> seven = std::shared_ptr<Cruthu::Point>(new Cruthu::Point());
-    std::shared_ptr<Cruthu::Point> eight = std::shared_ptr<Cruthu::Point>(new Cruthu::Point());
-
-    one->SetNeighbor(two);
-    one->SetNeighbor(four);
-    one->SetNeighbor(five);
-
-    two->SetNeighbor(one);
-    two->SetNeighbor(three);
-    two->SetNeighbor(six);
-
-    three->SetNeighbor(two);
-    three->SetNeighbor(four);
-    three->SetNeighbor(seven);
-
-    four->SetNeighbor(one);
-    four->SetNeighbor(three);
-    four->SetNeighbor(eight);
-
-    five->SetNeighbor(one);
-    five->SetNeighbor(six);
-    five->SetNeighbor(eight);
-
-    six->SetNeighbor(two);
-    six->SetNeighbor(five);
-    six->SetNeighbor(seven);
-
-    seven->SetNeighbor(three);
-    seven->SetNeighbor(six);
-    seven->SetNeighbor(eight);
-
-    eight->SetNeighbor(four);
-    eight->SetNeighbor(five);
-    eight->SetNeighbor(seven);
-
-    this->mPoints.push_back(one);
-    this->mPoints.push_back(two);
-    this->mPoints.push_back(three);
-    this->mPoints.push_back(four);
-    this->mPoints.push_back(five);
-    this->mPoints.push_back(six);
-    this->mPoints.push_back(seven);
-    this->mPoints.push_back(eight);
-
-    return Recurse(5, this->mPoints);
+    this->Expand(7);
+    return this->mPoints;
 }

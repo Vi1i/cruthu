@@ -16,6 +16,7 @@ public:
 
 private:
     std::vector<std::shared_ptr<Cruthu::Point>> mPoints;
+    void Expand(long double level);
 };
 extern "C" {
 	Cruthu::TeraGen * allocator() {
