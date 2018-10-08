@@ -19,6 +19,7 @@ public:
     void operator=(Cruthu::Point const& rhs);
 
     void SetNeighbor(std::shared_ptr<Cruthu::Point> neighbor);
+    bool RemoveNeighbor(std::shared_ptr<Cruthu::Point> neighbor);
     std::vector<std::shared_ptr<Cruthu::Point>> GetNeighbors();
 
 private:
