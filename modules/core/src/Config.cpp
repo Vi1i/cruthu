@@ -8,11 +8,6 @@
 #include <map>
 #include <filesystem>
 
-const std::string Cruthu::Config::Index::TERA = "ITera";
-const std::string Cruthu::Config::Index::TERAGEN = "ITeraGen";
-const std::string Cruthu::Config::Index::INDEXER = "IIndexer";
-const std::string Cruthu::Config::Index::THREAD_COUNT = "Thread_Count";
-
 Cruthu::Config::Config(std::string filename) {
     this->mConfigFilename = filename;
     if(this->mConfigFilename.empty()) {
@@ -32,37 +27,45 @@ Cruthu::Config::Config(std::string filename) {
 
     std::filesystem::path configFilePath(this->mConfigFilename);
     if(std::filesystem::exists(configFilePath)) {
-        std::ifstream file;
-        file.open(this->mConfigFilename, std::ios::in);
-        if(file.is_open()) {
-            std::string line;
-            while(std::getline(file, line)) {
-                //TODO: Parse config file
-                std::vector<std::string> key_val(Cruthu::split(line, '='));
-                if(key_val[0] == Cruthu::Config::Index::TERA) {
-                    this->mConf[Cruthu::Config::Index::TERA] = key_val[1];
-                }else if(key_val[0] == Cruthu::Config::Index::TERAGEN) {
-                    this->mConf[Cruthu::Config::Index::TERAGEN] = key_val[1];
-                }else if(key_val[0] == Cruthu::Config::Index::INDEXER) {
-                    this->mConf[Cruthu::Config::Index::INDEXER] = key_val[1];
-                }else if(key_val[0] == Cruthu::Config::Index::THREAD_COUNT) {
-                    this->mConf[Cruthu::Config::Index::THREAD_COUNT] = key_val[1];
-                }else{
-                    throw std::runtime_error("Invalid cruthu.conf file key: " + key_val[0]);
-                }
+        //TODO: Parse config file
+        try {
+            this->mConf.readFile(this->mConfigFilename.c_str());
+        }catch(const libconfig::FileIOException &fioex) {
+            std::cerr << "I/O error while reading file." << std::endl;
+            throw fioex;
+        }catch(const libconfig::ParseException &pex) {
+            std::cerr << "Parse error at " << pex.getFile() << ":" << pex.getLine()
+                << " - " << pex.getError() << std::endl;
+            throw pex;
+        }
+        const libconfig::Setting & root = this->mConf.getRoot();
+        std::string IIndexerName;
+        std::string ITeraName;
+        std::string ITeraGenName;
+        std::map<std::string, std::string> IFormas;
+        try {
+            const libconfig::Setting & plugins = root["plugins"];
+            IIndexerName = std::string(plugins.lookup("IIndexer"));
+            ITeraName = std::string(plugins.lookup("ITera"));
+            ITeraGenName = std::string(plugins.lookup("ITeraGen"));
+
+            const libconfig::Setting & formas = plugins["IForma"];
+            for(auto z = 0; z < formas.getLength(); ++z) {
+                const libconfig::Setting & forma = formas[z];
+                IFormas[forma.lookup("name")] = std::string(forma.lookup("lib"));
             }
-        }else{
-            throw std::runtime_error("Could not open config file: " + this->mConfigFilename);
+        }  catch(const libconfig::SettingNotFoundException &nfex) {
+            // Ignore.
+        }
+        std::cout << IIndexerName << std::endl;
+        std::cout << ITeraName << std::endl;
+        std::cout << ITeraGenName << std::endl;
+        std::cout << "Forma:" << std::endl;
+        for(auto const & forma : IFormas) {
+            std::cout << "\t" << forma.first << std::endl;
+            std::cout << "\t\t" << forma.second << std::endl;
         }
     }else{
         //TODO: SetDefaults
-        //TODO: (Vi1i) Maybe relook the whole enum thing.
-        this->mConf[Cruthu::Config::Index::TERA] = "libCruthuCoreTera.so";
-        this->mConf[Cruthu::Config::Index::TERAGEN] = "libCruthuCoreTeraGen.so";
-        this->mConf[Cruthu::Config::Index::INDEXER] = "libCruthuCoreTera.so";
     }
-}
-
-std::string Cruthu::Config::GetConf(std::string index) {
-    return this->mConf[index];
 }

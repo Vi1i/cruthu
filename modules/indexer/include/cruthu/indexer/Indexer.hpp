@@ -14,6 +14,7 @@ public:
     Indexer() = default;
     ~Indexer() = default;
 
+    virtual std::vector<std::shared_ptr<Cruthu::Point>> Index(std::shared_ptr<Cruthu::Point> point);
     virtual std::vector<std::shared_ptr<Cruthu::Point>> Index(std::vector<std::shared_ptr<Cruthu::Point>> points);
 };
 
@@ -28,4 +29,3 @@ extern "C" {
 }
 } // namespace Cruthu
 #endif
-

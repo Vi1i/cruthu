@@ -8,8 +8,21 @@ void Cruthu::Tera::SetIndexer(std::shared_ptr<Cruthu::IIndexer> indexer) {
     this->mIndexer = indexer;
 }
 
+void Cruthu::Tera::SetPoints(std::vector<std::shared_ptr<Cruthu::Point>> points) {
+    if(this->mPointsSet) {
+        return;
+    }
+    
+    this->mPointsSet = true;
+    this->mPoints = points;
+}
+
 void Cruthu::Tera::IndexPoints() {
-    this->mIndexedPoints = this->mIndexer.get()->Index(this->mPoints);
+    if(this->mPointsSet) {
+        this->mIndexedPoints = this->mIndexer.get()->Index(this->mSignificant);
+    }else{
+        this->mIndexedPoints = this->mIndexer.get()->Index(this->mPoints);
+    }
 }
 
 const std::vector<std::shared_ptr<Cruthu::Point>> & Cruthu::Tera::GetPoints() {

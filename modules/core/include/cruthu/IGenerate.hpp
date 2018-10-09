@@ -11,6 +11,7 @@ public:
     virtual ~IGenerate() = default;
 
     virtual std::vector<std::shared_ptr<Cruthu::Point>> Create() = 0;
+    virtual std::shared_ptr<Cruthu::Point> GetSignificantPoint() = 0;
 };
 } // namespace Cruthu
 #endif

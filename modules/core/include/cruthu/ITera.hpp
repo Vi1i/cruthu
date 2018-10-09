@@ -13,6 +13,8 @@ public:
     virtual ~ITera() = 0;
 
     virtual void SetIndexer(std::shared_ptr<Cruthu::IIndexer> indexer) = 0;
+    virtual void SetPoints(std::vector<std::shared_ptr<Cruthu::Point>> points) = 0;
+    virtual void SetSignificantPoint(std::shared_ptr<Cruthu::Point> significantPoint) = 0;
     virtual void IndexPoints() = 0;
     virtual const std::vector<std::shared_ptr<Cruthu::Point>> & GetPoints() = 0;
     virtual std::shared_ptr<Cruthu::Point> GetIndexedPoint() = 0;

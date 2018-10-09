@@ -21,6 +21,7 @@ public:
     void SetNeighbor(std::shared_ptr<Cruthu::Point> neighbor);
     bool RemoveNeighbor(std::shared_ptr<Cruthu::Point> neighbor);
     std::vector<std::shared_ptr<Cruthu::Point>> GetNeighbors();
+    std::shared_ptr<Cruthu::Point> GetSignificantPoint();
 
 private:
     boost::uuids::uuid mTag;

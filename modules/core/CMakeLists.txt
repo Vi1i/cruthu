@@ -3,6 +3,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(glm REQUIRED)
 find_package(Boost REQUIRED)
+find_package(libconfig++ REQUIRED)
+
+message("Config Found: ${CONFIG_LIBRARY}")
 
 add_library(CruthuCore SHARED
     src/Cruthu.cpp
@@ -12,6 +15,7 @@ add_library(CruthuCore SHARED
 
 target_link_libraries(CruthuCore
     stdc++fs
+    ${LIBCONFIG++_LIBRARIES}
 )
 
 target_include_directories(CruthuCore

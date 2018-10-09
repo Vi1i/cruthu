@@ -13,9 +13,12 @@ public:
     ~TeraGen() = default;
     
     virtual std::vector<std::shared_ptr<Cruthu::Point>> Create();
+    virtual std::shared_ptr<Cruthu::Point> GetSignificantPoint();
 
 private:
     std::vector<std::shared_ptr<Cruthu::Point>> mPoints;
+    std::shared_ptr<Cruthu::Point> mSignificant;
+
     void Expand(long double level);
 };
 extern "C" {

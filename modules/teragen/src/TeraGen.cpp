@@ -90,6 +90,20 @@ void Cruthu::TeraGen::Expand(long double level) {
     std::cout << "\rConnecting: 100.00%, " << elapsed.count() << "s" << std::endl;
 
     start = std::chrono::high_resolution_clock::now();
+    std::cout << "\rFinding Significant Point: " << std::fixed << std::setprecision(5) << (0) * 100.0 << "%" << std::flush;
+    {
+        std::cout << "\rFinding Significant Point: " << std::fixed << std::setprecision(5) << (.25) * 100.0 << "%" << std::flush;
+        int x = size / 2;
+        std::cout << "\rFinding Significant Point: " << std::fixed << std::setprecision(5) << (.5) * 100.0 << "%" << std::flush;
+        int y = size / 2;
+        std::cout << "\rFinding Significant Point: " << std::fixed << std::setprecision(5) << (.75) * 100.0 << "%" << std::flush;
+        this->mSignificant = points.at(y).at(x);
+    }
+    finish = std::chrono::high_resolution_clock::now();
+    elapsed = finish - start;
+    std::cout << "\rFinding Signifiant Point: 100.00%, " << elapsed.count() << "s" << std::endl;
+
+    start = std::chrono::high_resolution_clock::now();
     for(auto y = 0; y < size; ++y) {
         std::cout << "\rUnloading: " << std::fixed << std::setprecision(5) << (y/size) * 100.0 << "%" << std::flush;
         for(auto x = 0; x < size; ++x) {
@@ -103,6 +117,10 @@ void Cruthu::TeraGen::Expand(long double level) {
 }
 
 std::vector<std::shared_ptr<Cruthu::Point>> Cruthu::TeraGen::Create() {
-    this->Expand(7);
+    this->Expand(6);
     return this->mPoints;
+}
+
+std::shared_ptr<Cruthu::Point> Cruthu::TeraGen::GetSignificantPoint() {
+    return this->mSignificant;
 }

@@ -10,6 +10,7 @@ namespace Cruthu {
 class IIndexer {
 public:
     virtual ~IIndexer() = 0;
+    virtual std::vector<std::shared_ptr<Cruthu::Point>> Index(std::shared_ptr<Cruthu::Point> point) = 0;
     virtual std::vector<std::shared_ptr<Cruthu::Point>> Index(std::vector<std::shared_ptr<Cruthu::Point>> points) = 0;
 };
 } // namespace Cruthu
