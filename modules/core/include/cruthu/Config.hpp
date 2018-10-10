@@ -9,7 +9,7 @@
 #include <filesystem>
 #include <libconfig.h++>
 
-namespace Cruthu {
+namespace cruthu {
 class Config {
 public:
     Config(std::string filename = "");
@@ -19,5 +19,5 @@ private:
     std::string mConfigFilename;
     libconfig::Config mConf;
 };
-} // namespace Cruthu
+} // namespace cruthu
 #endif

@@ -1,17 +1,17 @@
 #ifndef CRUTHU_IINDEXER_HPP
 #define CRUTHU_IINDEXER_HPP
 
-#include <cruthu/Point.hpp>
+#include <cruthu/Node.hpp>
 
 #include <memory>
 #include <vector>
 
-namespace Cruthu {
+namespace cruthu {
 class IIndexer {
 public:
     virtual ~IIndexer() = 0;
-    virtual std::vector<std::shared_ptr<Cruthu::Point>> Index(std::shared_ptr<Cruthu::Point> point) = 0;
-    virtual std::vector<std::shared_ptr<Cruthu::Point>> Index(std::vector<std::shared_ptr<Cruthu::Point>> points) = 0;
+    virtual std::vector<std::shared_ptr<cruthu::Node>> Index(std::shared_ptr<cruthu::Node> node) = 0;
+    virtual std::vector<std::shared_ptr<cruthu::Node>> Index(std::vector<std::shared_ptr<cruthu::Node>> nodes) = 0;
 };
-} // namespace Cruthu
+} // namespace cruthu
 #endif

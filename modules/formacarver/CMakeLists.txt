@@ -1,21 +1,13 @@
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(glm REQUIRED)
-find_package(Boost REQUIRED)
-find_package(libconfig++ REQUIRED)
-
-add_library(CruthuCore SHARED
-    src/Cruthu.cpp
-    src/Node.cpp
+add_library(CruthuCoreFormaCarver SHARED
+    src/FormaCarver.cpp
 )
 
-target_link_libraries(CruthuCore
-    stdc++fs
-    ${LIBCONFIG++_LIBRARIES}
-)
+target_link_libraries(CruthuCoreFormaCarver CruthuCore)
 
-target_include_directories(CruthuCore
+target_include_directories(CruthuCoreFormaCarver
     PUBLIC
         $<INSTALL_INTERFACE:include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -23,15 +15,14 @@ target_include_directories(CruthuCore
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-set_target_properties(CruthuCore PROPERTIES
+set_target_properties(CruthuCoreFormaCarver PROPERTIES
     VERSION 0.1.0
     SOVERSION 0
 )
 
 install(DIRECTORY include/ DESTINATION "${INSTALL_INCLUDE_DIR}")
-
-install(TARGETS CruthuCore
+install(TARGETS CruthuCoreFormaCarver
     EXPORT CruthuCoreTargets
     RUNTIME DESTINATION "${INSTALL_BIN_DIR}" COMPONENT bin
-    LIBRARY DESTINATION "${INSTALL_LIB_DIR}" COMPONENT shlib
+    LIBRARY DESTINATION "${INSTALL_LIB_DIR}/Cruthu/core" COMPONENT shlib
 )

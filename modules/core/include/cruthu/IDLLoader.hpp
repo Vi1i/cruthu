@@ -4,7 +4,7 @@
 #include <memory>
 #include <string>
 
-namespace Cruthu {
+namespace cruthu {
 template <class T>
 class IDLLoader {
 public:

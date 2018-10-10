@@ -2,30 +2,30 @@
 #define CRUTHU_INDEXER_HPP
 
 #include <cruthu/IIndexer.hpp>
-#include <cruthu/Point.hpp>
+#include <cruthu/Node.hpp>
 
 #include <vector>
 #include <memory>
 #include <random>
 
-namespace Cruthu {
+namespace cruthu {
 class Indexer : public IIndexer {
 public:
     Indexer() = default;
     ~Indexer() = default;
 
-    virtual std::vector<std::shared_ptr<Cruthu::Point>> Index(std::shared_ptr<Cruthu::Point> point);
-    virtual std::vector<std::shared_ptr<Cruthu::Point>> Index(std::vector<std::shared_ptr<Cruthu::Point>> points);
+    virtual std::vector<std::shared_ptr<cruthu::Node>> Index(std::shared_ptr<cruthu::Node> node);
+    virtual std::vector<std::shared_ptr<cruthu::Node>> Index(std::vector<std::shared_ptr<cruthu::Node>> nodes);
 };
 
 extern "C" {
-	Cruthu::Indexer * allocator() {
-		return new Cruthu::Indexer();
+	cruthu::Indexer * allocator() {
+		return new cruthu::Indexer();
 	}
 
-	void deleter(Cruthu::Indexer * ptr) {
+	void deleter(cruthu::Indexer * ptr) {
 		delete ptr;
 	}
 }
-} // namespace Cruthu
+} // namespace cruthu
 #endif

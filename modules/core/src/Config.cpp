@@ -8,7 +8,7 @@
 #include <map>
 #include <filesystem>
 
-Cruthu::Config::Config(std::string filename) {
+cruthu::Config::Config(std::string filename) {
     this->mConfigFilename = filename;
     if(this->mConfigFilename.empty()) {
         char * xdg_config_home = std::getenv("XDG_CONFIG_HOME");
@@ -39,15 +39,20 @@ Cruthu::Config::Config(std::string filename) {
             throw pex;
         }
         const libconfig::Setting & root = this->mConf.getRoot();
-        std::string IIndexerName;
         std::string ITeraName;
         std::string ITeraGenName;
         std::map<std::string, std::string> IFormas;
+        std::map<std::string, std::string> IIndexers;
         try {
             const libconfig::Setting & plugins = root["plugins"];
-            IIndexerName = std::string(plugins.lookup("IIndexer"));
             ITeraName = std::string(plugins.lookup("ITera"));
             ITeraGenName = std::string(plugins.lookup("ITeraGen"));
+
+            const libconfig::Setting & indexers = plugins["IIndexer"];
+            for(auto z = 0; z < indexers.getLength(); ++z) {
+                const libconfig::Setting & indexer = indexers[z];
+                IIndexers[indexer.lookup("name")] = std::string(indexer.lookup("lib"));
+            }
 
             const libconfig::Setting & formas = plugins["IForma"];
             for(auto z = 0; z < formas.getLength(); ++z) {
@@ -57,10 +62,14 @@ Cruthu::Config::Config(std::string filename) {
         }  catch(const libconfig::SettingNotFoundException &nfex) {
             // Ignore.
         }
-        std::cout << IIndexerName << std::endl;
         std::cout << ITeraName << std::endl;
         std::cout << ITeraGenName << std::endl;
-        std::cout << "Forma:" << std::endl;
+        std::cout << "Indexers:" << std::endl;
+        for(auto const & indexer : IIndexers) {
+            std::cout << "\t" << indexer.first << std::endl;
+            std::cout << "\t\t" << indexer.second << std::endl;
+        }
+        std::cout << "Formas:" << std::endl;
         for(auto const & forma : IFormas) {
             std::cout << "\t" << forma.first << std::endl;
             std::cout << "\t\t" << forma.second << std::endl;

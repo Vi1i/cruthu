@@ -9,9 +9,9 @@ get_filename_component(CRUTHUCORE_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
 set(CRUTHUCORE_INCLUDE_DIRS "@CONF_INCLUDE_DIRS@")
 
 # Our library dependencies (contains definitions for IMPORTED targets)
-if(NOT TARGET CruthuCore CruthuCoreTera AND NOT Cruthu_BINARY_DIR)
+if(NOT TARGET CruthuCore AND NOT Cruthu_BINARY_DIR)
     include("${CRUTHU_CMAKE_DIR}/CruthuCoreTargets.cmake")
 endif()
 
 # These are IMPORTED targets created by CruthuCoreTargets.cmake
-set(CRUTHU_LIBRARIES CruthuCore CruthuCoreTera)
+set(CRUTHU_LIBRARIES CruthuCore)

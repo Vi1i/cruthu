@@ -1,17 +1,16 @@
-#include <cruthu/Point.hpp>
+#include <cruthu/Node.hpp>
 
 #include <boost/uuid/uuid.hpp>
-
 #include <iostream>
 
-void Cruthu::Point::SetNeighbor(std::shared_ptr<Cruthu::Point> neighbor) {
+void cruthu::Node::SetNeighbor(std::shared_ptr<cruthu::Node> neighbor) {
     this->mNeighbors.push_back(neighbor);
 }
 
-bool Cruthu::Point::RemoveNeighbor(std::shared_ptr<Cruthu::Point> neighbor) {
+bool cruthu::Node::RemoveNeighbor(std::shared_ptr<cruthu::Node> neighbor) {
     auto before = this->mNeighbors.size();
     this->mNeighbors.erase(std::remove_if(this->mNeighbors.begin(), this->mNeighbors.end(),
-            [neighbor](std::shared_ptr<Cruthu::Point> const& ptr) {
+            [neighbor](std::shared_ptr<cruthu::Node> const& ptr) {
                 return ptr.get()->GetTag() == neighbor.get()->GetTag();
             }),
             this->mNeighbors.end());
@@ -19,19 +18,19 @@ bool Cruthu::Point::RemoveNeighbor(std::shared_ptr<Cruthu::Point> neighbor) {
     return after < before;
 }
 
-std::vector<std::shared_ptr<Cruthu::Point>> Cruthu::Point::GetNeighbors() {
+std::vector<std::shared_ptr<cruthu::Node>> cruthu::Node::GetNeighbors() {
     return this->mNeighbors;
 }
 
-boost::uuids::uuid Cruthu::Point::GetTag() {
+boost::uuids::uuid cruthu::Node::GetTag() {
     return this->mTag;
 }
 
-bool Cruthu::Point::operator==(Cruthu::Point const& rhs) const {
+bool cruthu::Node::operator==(cruthu::Node const& rhs) const {
     return this->mTag == rhs.mTag;
 }
 
-void Cruthu::Point::operator=(Cruthu::Point const& rhs) {
+void cruthu::Node::operator=(cruthu::Node const& rhs) {
     this->mTag = rhs.mTag;
     this->mNeighbors = rhs.mNeighbors;
 }

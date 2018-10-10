@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-namespace Cruthu {
+namespace cruthu {
 template <class T>
 class DLLoader : public IDLLoader<T> {
 public:

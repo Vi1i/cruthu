@@ -38,13 +38,14 @@ add_subdirectory(modules/core)
 add_subdirectory(modules/tera)
 add_subdirectory(modules/teragen)
 add_subdirectory(modules/indexer)
+add_subdirectory(modules/formacarver)
 add_subdirectory(modules/cli)
 
 # The interesting stuff goes here
 # ===============================
 
 # Add all targets to the build-tree export set
-export(TARGETS CruthuCore CruthuCoreTera CruthuCoreIndexer
+export(TARGETS CruthuCore CruthuCoreTera CruthuCoreIndexer CruthuCoreFormaCarver
     FILE "${PROJECT_BINARY_DIR}/CruthuCoreTargets.cmake")
 
 # Export the package for use from the build-tree

@@ -1,35 +1,35 @@
 #ifndef CRUTHU_TERAGEN_HPP
 #define CRUTHU_TERAGEN_HPP
 
-#include <cruthu/IGenerate.hpp>
-#include <cruthu/Point.hpp>
+#include <cruthu/ITeraGen.hpp>
+#include <cruthu/Node.hpp>
 
 #include <vector>
 
-namespace Cruthu {
-class TeraGen : public IGenerate {
+namespace cruthu {
+class TeraGen : public ITeraGen {
 public:
     TeraGen() = default;
     ~TeraGen() = default;
     
-    virtual std::vector<std::shared_ptr<Cruthu::Point>> Create();
-    virtual std::shared_ptr<Cruthu::Point> GetSignificantPoint();
+    virtual std::vector<std::shared_ptr<cruthu::Node>> Create();
+    virtual std::shared_ptr<cruthu::Node> GetSignificantNode();
 
 private:
-    std::vector<std::shared_ptr<Cruthu::Point>> mPoints;
-    std::shared_ptr<Cruthu::Point> mSignificant;
+    std::vector<std::shared_ptr<cruthu::Node>> mNodes;
+    std::shared_ptr<cruthu::Node> mSignificant;
 
     void Expand(long double level);
 };
 extern "C" {
-	Cruthu::TeraGen * allocator() {
-		return new Cruthu::TeraGen();
+	cruthu::TeraGen * allocator() {
+		return new cruthu::TeraGen();
 	}
 
-	void deleter(Cruthu::TeraGen * ptr) {
+	void deleter(cruthu::TeraGen * ptr) {
 		delete ptr;
 	}
 }
-} // namespace Cruthu
+} // namespace cruthu
 #endif
 

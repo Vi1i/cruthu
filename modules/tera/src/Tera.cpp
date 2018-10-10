@@ -4,36 +4,36 @@
 #include <memory>
 #include <random>
 
-void Cruthu::Tera::SetIndexer(std::shared_ptr<Cruthu::IIndexer> indexer) {
+void cruthu::Tera::SetIndexer(std::shared_ptr<cruthu::IIndexer> indexer) {
     this->mIndexer = indexer;
 }
 
-void Cruthu::Tera::SetPoints(std::vector<std::shared_ptr<Cruthu::Point>> points) {
-    if(this->mPointsSet) {
+void cruthu::Tera::SetNodes(std::vector<std::shared_ptr<cruthu::Node>> nodes) {
+    if(this->mNodesSet) {
         return;
     }
     
-    this->mPointsSet = true;
-    this->mPoints = points;
+    this->mNodesSet = true;
+    this->mNodes = nodes;
 }
 
-void Cruthu::Tera::IndexPoints() {
-    if(this->mPointsSet) {
-        this->mIndexedPoints = this->mIndexer.get()->Index(this->mSignificant);
+void cruthu::Tera::IndexNodes() {
+    if(this->mNodesSet) {
+        this->mIndexedNodes = this->mIndexer.get()->Index(this->mSignificant);
     }else{
-        this->mIndexedPoints = this->mIndexer.get()->Index(this->mPoints);
+        this->mIndexedNodes = this->mIndexer.get()->Index(this->mNodes);
     }
 }
 
-const std::vector<std::shared_ptr<Cruthu::Point>> & Cruthu::Tera::GetPoints() {
-    return this->mPoints;
+const std::vector<std::shared_ptr<cruthu::Node>> & cruthu::Tera::GetNodes() {
+    return this->mNodes;
 }
 
-std::shared_ptr<Cruthu::Point> Cruthu::Tera::GetIndexedPoint() {
-    //TODO: (Vi1i) Make a better way to return an idexed point than random...
+std::shared_ptr<cruthu::Node> cruthu::Tera::GetIndexedNode() {
+    //TODO: (Vi1i) Make a better way to return an idexed node than random...
     std::mt19937 rng;
     rng.seed(std::random_device()());
-    std::uniform_int_distribution<std::mt19937::result_type> dist(0, this->mIndexedPoints.size());
+    std::uniform_int_distribution<std::mt19937::result_type> dist(0, this->mIndexedNodes.size());
 
-    return this->mIndexedPoints.at(dist(rng));
+    return this->mIndexedNodes.at(dist(rng));
 }

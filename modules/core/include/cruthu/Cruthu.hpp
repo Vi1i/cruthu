@@ -1,21 +1,29 @@
-#pragma once
+#ifndef CRUTHU_CRUTHU_HPP
+#define CRUTHU_CRUTHU_HPP
 
-#include <vector>
-#include <glm/glm.hpp>
+#include <cruthu/Settings.hpp>
 
-// http://www-cs-students.stanford.edu/~amitp/game-programming/polygon-map-generation/
-//#include <cruthu/config.hpp>
-//#include <cruthu/icosphere/icosphere.hpp>
+#include <string>
 
 namespace cruthu {
-    void Version();
-
     class  Cruthu {
     public:
-    	Cruthu() = default;
+    	Cruthu();
     	~Cruthu() = default;
 
-        void Initialize();
+        bool SetConfigFileName(std::string configFileName);
+        bool SetConfigFilePath(std::string configFilePath);
+
+        bool Initialize();
+        bool Run();
     private:
+        std::string mConfigFileName;
+        std::string mConfigFilePath;
+
+        bool CreateDefaultConfigFile();
+        bool ParseConfig();
+        bool FindLibraries();
+        cruthu::Settings mSettings;
     };
 }
+#endif

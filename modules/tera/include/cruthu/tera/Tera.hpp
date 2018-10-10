@@ -3,43 +3,43 @@
 
 #include <cruthu/ITera.hpp>
 #include <cruthu/IIndexer.hpp>
-#include <cruthu/Point.hpp>
+#include <cruthu/Node.hpp>
 
 #include <vector>
 #include <memory>
 #include <random>
 
-namespace Cruthu {
+namespace cruthu {
 class Tera : public ITera {
 public:
-    Tera() : mPointsSet(false), mSignificantPointSet(false) {};
+    Tera() : mNodesSet(false), mSignificantNodeSet(false) {};
     ~Tera() = default;
 
-    virtual void SetIndexer(std::shared_ptr<Cruthu::IIndexer> indexer) ;
-    virtual void SetPoints(std::vector<std::shared_ptr<Cruthu::Point>> points);
-    virtual void SetSignificantPoint(std::shared_ptr<Cruthu::Point> significantPoint);
-    virtual void IndexPoints();
-    virtual const std::vector<std::shared_ptr<Cruthu::Point>> & GetPoints();
-    virtual std::shared_ptr<Cruthu::Point> GetIndexedPoint();
+    virtual void SetIndexer(std::shared_ptr<cruthu::IIndexer> indexer) ;
+    virtual void SetNodes(std::vector<std::shared_ptr<cruthu::Node>> nodes);
+    virtual void SetSignificantNode(std::shared_ptr<cruthu::Node> significantNode);
+    virtual void IndexNodes();
+    virtual const std::vector<std::shared_ptr<cruthu::Node>> & GetNodes();
+    virtual std::shared_ptr<cruthu::Node> GetIndexedNode();
 
 private:
-    bool mPointsSet;
-    bool mSignificantPointSet;
-    std::shared_ptr<Cruthu::Point> mSignificant;
-    std::vector<std::shared_ptr<Cruthu::Point>> mPoints;
-    std::vector<std::shared_ptr<Cruthu::Point>> mIndexedPoints;
+    bool mNodesSet;
+    bool mSignificantNodeSet;
+    std::shared_ptr<cruthu::Node> mSignificant;
+    std::vector<std::shared_ptr<cruthu::Node>> mNodes;
+    std::vector<std::shared_ptr<cruthu::Node>> mIndexedNodes;
 
-    std::shared_ptr<Cruthu::IIndexer> mIndexer;
+    std::shared_ptr<cruthu::IIndexer> mIndexer;
 };
 
 extern "C" {
-	Cruthu::Tera * allocator() {
-		return new Cruthu::Tera();
+	cruthu::Tera * allocator() {
+		return new cruthu::Tera();
 	}
 
-	void deleter(Cruthu::Tera * ptr) {
+	void deleter(cruthu::Tera * ptr) {
 		delete ptr;
 	}
 }
-} // namespace Cruthu
+} // namespace cruthu
 #endif
