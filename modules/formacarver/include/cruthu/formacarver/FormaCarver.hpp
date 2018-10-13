@@ -5,10 +5,10 @@
 
 namespace cruthu {
 class FormaCarver : public IForma {
+public:
     FormaCarver() = default;
     ~FormaCarver() = default;
 };
-}
 
 extern "C" {
 	cruthu::FormaCarver * allocator() {

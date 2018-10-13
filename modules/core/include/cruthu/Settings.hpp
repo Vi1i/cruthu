@@ -10,6 +10,7 @@ public:
     struct ITera {
         std::string Name;
         std::string LibName;
+        std::string LibPath;
         bool SignificantPointIndex;
         bool IndexChain;
     };
@@ -17,18 +18,21 @@ public:
     struct ITeraGen {
         std::string Name;
         std::string LibName;
+        std::string LibPath;
         bool SignificantPointIndex;
     };
 
     struct IIndexer {
         std::string Name;
         std::string LibName;
+        std::string LibPath;
         bool SignificantPointIndex;
     };
 
     struct IForma {
         std::string Name;
         std::string LibName;
+        std::string LibPath;
     };
 
     ITera Tera;

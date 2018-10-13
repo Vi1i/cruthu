@@ -4,6 +4,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(glm REQUIRED)
 find_package(Boost REQUIRED)
 find_package(libconfig++ REQUIRED)
+find_package(spdlog REQUIRED)
 
 add_library(CruthuCore SHARED
     src/Cruthu.cpp

@@ -10,6 +10,9 @@
 #include <algorithm>
 #include <iomanip>
 
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+
 //void Run(std::shared_ptr<cruthu::DLLoader<cruthu::IIndexer>> indexerLoader, std::shared_ptr<cruthu::DLLoader<cruthu::ITera>> teraLoader, std::vector<std::shared_ptr<cruthu::Node>> nodes, std::shared_ptr<cruthu::Node> significantNode) {
 //    std::shared_ptr<cruthu::IIndexer> indexer = indexerLoader.get()->DLGetInstance();
 //    std::shared_ptr<cruthu::ITera> tera = teraLoader.get()->DLGetInstance();
@@ -54,9 +57,18 @@
 //}
 
 int main(int argc, char ** argv) {
+    auto log_level = spdlog::level::trace;
+    auto sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+    auto logger = std::make_shared<spdlog::logger>("Cruthu-Cli", sink);
+    logger->set_level(log_level);
+    logger->trace("Logger Initilized");
+
     cruthu::Cruthu world;
 
+    world.SetSink(sink, log_level);
+
     if(!world.Initialize()) {
+        logger->error("Cruthu initialization failed!");
         return EXIT_FAILURE;
     }
     return EXIT_SUCCESS;
