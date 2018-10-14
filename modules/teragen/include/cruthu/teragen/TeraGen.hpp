@@ -2,9 +2,11 @@
 #define CRUTHU_TERAGEN_HPP
 
 #include <cruthu/ITeraGen.hpp>
+#include <cruthu/ITera.hpp>
 #include <cruthu/Node.hpp>
 
 #include <vector>
+#include <memory>
 
 namespace cruthu {
 class TeraGen : public ITeraGen {
@@ -12,14 +14,13 @@ public:
     TeraGen() = default;
     ~TeraGen() = default;
     
-    virtual std::vector<std::shared_ptr<cruthu::Node>> Create();
-    virtual std::shared_ptr<cruthu::Node> GetSignificantNode();
+    virtual void Create(std::shared_ptr<cruthu::ITera>);
+    virtual void SetSink(std::shared_ptr<spdlog::sinks::sink> sink, spdlog::level::level_enum level);
 
 private:
-    std::vector<std::shared_ptr<cruthu::Node>> mNodes;
-    std::shared_ptr<cruthu::Node> mSignificant;
+    std::shared_ptr<spdlog::logger> mLogger;
 
-    void Expand(long double level);
+    void Expand(std::shared_ptr<cruthu::ITera> tera, long double level);
 };
 extern "C" {
 	cruthu::TeraGen * allocator() {

@@ -5,6 +5,7 @@ find_package(glm REQUIRED)
 find_package(Boost REQUIRED)
 find_package(libconfig++ REQUIRED)
 find_package(spdlog REQUIRED)
+find_package(ImageMagick REQUIRED COMPONENTS Magick++)
 
 add_library(CruthuCore SHARED
     src/Cruthu.cpp
@@ -14,7 +15,10 @@ add_library(CruthuCore SHARED
 target_link_libraries(CruthuCore
     stdc++fs
     ${LIBCONFIG++_LIBRARIES}
+    ${ImageMagick_LIBRARIES}
 )
+
+include_directories(${ImageMagick_INCLUDE_DIRS})
 
 target_include_directories(CruthuCore
     PUBLIC

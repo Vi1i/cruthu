@@ -1,22 +1,24 @@
 #ifndef CRUTHU_ITERA_HPP
 #define CRUTHU_ITERA_HPP
 
-#include <cruthu/IIndexer.hpp>
 #include <cruthu/Node.hpp>
 
 #include <memory>
 #include <vector>
 
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/sink.h>
+
 namespace cruthu {
 class ITera {
 public:
-    virtual ~ITera() = 0;
+    std::vector<std::shared_ptr<cruthu::Node>> Nodes;
+    std::vector<std::shared_ptr<cruthu::Node>> IndexedNodes;
+    std::shared_ptr<cruthu::Node> SignificantNode;
 
-    virtual void SetIndexer(std::shared_ptr<cruthu::IIndexer> indexer) = 0;
-    virtual void SetNodes(std::vector<std::shared_ptr<cruthu::Node>> nodes) = 0;
-    virtual void SetSignificantNode(std::shared_ptr<cruthu::Node> significantNode) = 0;
-    virtual void IndexNodes() = 0;
-    virtual const std::vector<std::shared_ptr<cruthu::Node>> & GetNodes() = 0;
+    virtual ~ITera() = default;
+
+    virtual void SetSink(std::shared_ptr<spdlog::sinks::sink> sink, spdlog::level::level_enum level) = 0;
     virtual std::shared_ptr<cruthu::Node> GetIndexedNode() = 0;
 };
 } // namespace cruthu

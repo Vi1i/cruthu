@@ -1,42 +1,75 @@
 #include <cruthu/Cruthu.hpp>
 #include <cruthu/Settings.hpp>
+#include <cruthu/DLLoader.hpp>
+
+#include <cruthu/ITeraGen.hpp>
+#include <cruthu/IIndexer.hpp>
+#include <cruthu/ITera.hpp>
+#include <cruthu/IForma.hpp>
 
 #include <filesystem>
 #include <string>
 #include <exception>
 #include <libconfig.h++>
+#include <Magick++.h>
 #include <iostream>
 #include <chrono>
 #include <iomanip>
 #include <vector>
 #include <set>
 
-cruthu::Cruthu::Cruthu() {
+cruthu::Cruthu::Cruthu(std::shared_ptr<spdlog::sinks::sink> sink, spdlog::level::level_enum level) {
+    this->mLogger = std::make_shared<spdlog::logger>("Cruthu", sink);
+    this->mLogger->set_level(level);
+    this->mLogger->trace("Logger Initilized");
+
     this->mConfigFileName = "cruthu.cfg";
 
     char * xdg_config_home = std::getenv("XDG_CONFIG_HOME");
     if(xdg_config_home == NULL) {
+        this->mLogger->debug("$XDG_CONFIG_HOME not set.");
         char * bash_home = std::getenv("HOME");
         if(bash_home == NULL) {
+            this->mLogger->debug("$HOME not set.");
             //TODO: (Vi1i) Actually add this piece
             throw std::runtime_error("Needs implementation of getpuid perhaps...");
         }else{
             this->mConfigFilePath = static_cast<std::string>(bash_home) + "/.config/Cruthu";
+            this->mLogger->debug("Default config file path: " + this->mConfigFilePath);
         }
     }else{
+        this->mLogger->info("Default config path: " + std::string(xdg_config_home));
         this->mConfigFilePath = static_cast<std::string>(xdg_config_home) + "/.config/Cruthu";
     }
 
     std::filesystem::path conf(this->mConfigFilePath + "/" + this->mConfigFileName);
-    if(!std::filesystem::exists(conf.stem())) {
-        std::filesystem::create_directories(conf.stem());
+    if(!std::filesystem::exists(conf.parent_path())) {
+        this->mLogger->debug("Directory does not exist: " + conf.parent_path().string());
+        this->mLogger->debug("Creating directories: " + conf.parent_path().string());
+        std::filesystem::create_directories(conf.parent_path());
+    }
+    if(!std::filesystem::exists(conf)) {
+        this->mLogger->info("No config, creating default settings");
         if(!this->CreateDefaultConfigFile()) {
+            this->mLogger->critical("Failed to create a default config file!");
             throw std::runtime_error("Failed to create a default conf file");
         }
-    }else if(!std::filesystem::exists(conf)) {
-        if(!this->CreateDefaultConfigFile()) {
-            throw std::runtime_error("Failed to create a default conf file");
-        }
+    }
+}
+
+cruthu::Cruthu::~Cruthu() {
+    this->mLogger->info("Closing libraries");
+    this->mSettings.Tera.Factory->DLCloseLib();
+    this->mLogger->debug("Closed ITera library");
+    this->mSettings.TeraGen.Factory->DLCloseLib();
+    this->mLogger->debug("Closed ITeraGen library");
+    for(auto & indexer : this->mSettings.Indexers) {
+        indexer.Factory->DLCloseLib();
+        this->mLogger->debug("Closed IIindexer library");
+    }
+    for(auto & forma : this->mSettings.Formas) {
+        forma.Factory->DLCloseLib();
+        this->mLogger->debug("Closed IForma library");
     }
 }
 
@@ -66,10 +99,52 @@ bool cruthu::Cruthu::SetConfigFilePath(std::string configFilePath) {
 
 bool cruthu::Cruthu::Initialize() {
     bool initialized(false);
-    if(this->ParseConfig() && this->FindLibraries()) {
+    if(this->ParseConfig() && this->FindLibraries() && this->OpenLibraries()) {
         initialized = true;
     }
     return initialized;
+}
+
+void cruthu::Cruthu::Run() {
+    this->mLogger->info("Creating instances");
+    std::shared_ptr<cruthu::ITera> tera(this->mSettings.Tera.Factory->DLGetInstance());
+    if(!this->mLogger->sinks().empty()) {
+        tera->SetSink(this->mLogger->sinks().at(0), this->mLogger->level());
+    }
+    this->mLogger->debug("Tera instance created");
+    std::shared_ptr<cruthu::ITeraGen> teraGen(this->mSettings.TeraGen.Factory->DLGetInstance());
+    if(!this->mLogger->sinks().empty()) {
+        teraGen->SetSink(this->mLogger->sinks().at(0), this->mLogger->level());
+    }
+    this->mLogger->debug("TeraGen instance created");
+    std::vector<std::shared_ptr<cruthu::IIndexer>> indexers;
+    for(const auto indexer : this->mSettings.Indexers) {
+        std::shared_ptr<cruthu::IIndexer> i(indexer.Factory->DLGetInstance());
+        if(!this->mLogger->sinks().empty()) {
+            i->SetSink(this->mLogger->sinks().at(0), this->mLogger->level());
+        }
+        indexers.push_back(i);
+        this->mLogger->debug("Indexer(" + indexer.Name + ") instance created");
+    }
+    std::vector<std::shared_ptr<cruthu::IForma>> formas;
+    for(const auto & forma : this->mSettings.Formas) {
+        std::shared_ptr<cruthu::IForma> f(forma.Factory->DLGetInstance());
+        if(!this->mLogger->sinks().empty()) {
+            f->SetSink(this->mLogger->sinks().at(0), this->mLogger->level());
+        }
+        formas.push_back(f);
+        this->mLogger->debug("Forma(" + forma.Name + ") instance created");
+    }
+    
+    teraGen->Create(tera);
+    indexers.at(0)->Index(tera);
+    int size = tera->IndexedNodes.size() / 100;
+    for(auto z = 0; z < size; ++z) {
+        this->mLogger->debug("Forma Iteration: " + std::to_string(size) + "/" + std::to_string(z));
+        formas.at(0)->Modify(tera);
+    }
+
+    this->CreateImage(tera);
 }
 
 bool cruthu::Cruthu::ParseConfig() {
@@ -303,12 +378,58 @@ bool cruthu::Cruthu::FindLibraries() {
     return found;
 }
 
+bool cruthu::Cruthu::OpenLibraries() {
+    bool opened(false);
+
+    this->mLogger->info("Creating factories");
+    this->mSettings.Tera.Factory = std::shared_ptr<cruthu::DLLoader<cruthu::ITera>>(new cruthu::DLLoader<cruthu::ITera>(this->mSettings.Tera.LibPath));
+    this->mLogger->debug("Created ITera factory");
+    this->mSettings.TeraGen.Factory = std::shared_ptr<cruthu::DLLoader<cruthu::ITeraGen>>(new cruthu::DLLoader<cruthu::ITeraGen>(this->mSettings.TeraGen.LibPath));
+    this->mLogger->debug("Created ITeraGen factory");
+    for(auto & indexer : this->mSettings.Indexers) {
+        indexer.Factory = std::shared_ptr<cruthu::DLLoader<cruthu::IIndexer>>(new cruthu::DLLoader<cruthu::IIndexer>(indexer.LibPath));
+        this->mLogger->debug("Created IIndexer factory");
+    }
+    for(auto & forma : this->mSettings.Formas) {
+        forma.Factory = std::shared_ptr<cruthu::DLLoader<cruthu::IForma>>(new cruthu::DLLoader<cruthu::IForma>(forma.LibPath));
+        this->mLogger->debug("Created IForma factory");
+    }
+
+    this->mLogger->info("Opening libraries");
+    this->mSettings.Tera.Factory->DLOpenLib();
+    this->mLogger->debug("Opened ITera library");
+    this->mSettings.TeraGen.Factory->DLOpenLib();
+    this->mLogger->debug("Opened ITeraGen library");
+    for(auto & indexer : this->mSettings.Indexers) {
+        indexer.Factory->DLOpenLib();
+        this->mLogger->debug("Opened IIndxer library");
+    }
+    for(auto & forma : this->mSettings.Formas) {
+        forma.Factory->DLOpenLib();
+        this->mLogger->debug("Opened IForma library");
+    }
+
+    opened = true;
+    return opened;
+}
+
 bool cruthu::Cruthu::CreateDefaultConfigFile() {
     return false;
 }
 
-void cruthu::Cruthu::SetSink(std::shared_ptr<spdlog::sinks::sink> sink, spdlog::level::level_enum level) {
-    this->mLogger = std::make_shared<spdlog::logger>("Cruthu", sink);
-    this->mLogger->set_level(level);
-    this->mLogger->trace("Logger Initilized");
+void cruthu::Cruthu::CreateImage(std::shared_ptr<cruthu::ITera> tera) {
+    double long size = std::sqrt(tera->Nodes.size());
+    Magick::Image image(Magick::Geometry(size, size), "white");
+    image.type(Magick::GrayscaleType);
+
+    for(auto y = 0; y < size; ++y) {
+        for(auto x = 0; x < size; ++x) {
+            double color = tera->Nodes.at((y * size) + x)->GetHeight();
+            this->mLogger->trace(tera->Nodes.at((y * size) + x)->to_string() + ": " + std::to_string(color));
+            image.pixelColor(y, x, Magick::ColorGray(color));
+        }
+    }
+
+    image.syncPixels();
+    image.write("temp.png");
 }

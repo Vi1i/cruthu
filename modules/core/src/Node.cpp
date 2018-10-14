@@ -1,6 +1,7 @@
 #include <cruthu/Node.hpp>
 
 #include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_io.hpp>
 #include <iostream>
 
 void cruthu::Node::SetNeighbor(std::shared_ptr<cruthu::Node> neighbor) {
@@ -33,4 +34,16 @@ bool cruthu::Node::operator==(cruthu::Node const& rhs) const {
 void cruthu::Node::operator=(cruthu::Node const& rhs) {
     this->mTag = rhs.mTag;
     this->mNeighbors = rhs.mNeighbors;
+}
+
+void cruthu::Node::SetHeight(double height) {
+    this->mHeight = height;
+}
+
+double cruthu::Node::GetHeight() {
+    return this->mHeight;
+}
+
+std::string cruthu::Node::to_string() {
+    return boost::uuids::to_string(this->mTag);
 }

@@ -2,9 +2,8 @@
 #define CRUTHU_INDEXER_HPP
 
 #include <cruthu/IIndexer.hpp>
-#include <cruthu/Node.hpp>
+#include <cruthu/ITera.hpp>
 
-#include <vector>
 #include <memory>
 #include <random>
 
@@ -14,8 +13,11 @@ public:
     Indexer() = default;
     ~Indexer() = default;
 
-    virtual std::vector<std::shared_ptr<cruthu::Node>> Index(std::shared_ptr<cruthu::Node> node);
-    virtual std::vector<std::shared_ptr<cruthu::Node>> Index(std::vector<std::shared_ptr<cruthu::Node>> nodes);
+    virtual void Index(std::shared_ptr<cruthu::ITera> tera);
+    virtual void SetSink(std::shared_ptr<spdlog::sinks::sink> sink, spdlog::level::level_enum level);
+
+private:
+    std::shared_ptr<spdlog::logger> mLogger;
 };
 
 extern "C" {

@@ -6,17 +6,14 @@
 #include <limits>
 #include <chrono>
 
-void cruthu::TeraGen::Expand(long double level) {
+void cruthu::TeraGen::Expand(std::shared_ptr<cruthu::ITera> tera, long double level) {
     double long size(std::pow(4, level));
     if(size == HUGE_VAL) {
         size = std::numeric_limits<long double>::max();
     }
 
-    std::cout << "Size: " << size << "x" << size << std::endl;
-    auto start = std::chrono::high_resolution_clock::now();
     std::vector<std::vector<std::shared_ptr<cruthu::Node>>> nodes(size);
     for(auto y = 0; y < size; ++y) {
-        std::cout << "\rInitializing: " << std::fixed << std::setprecision(5) << (y/size) * 100.0 << "%" << std::flush;
         std::vector<std::shared_ptr<cruthu::Node>> temp;
         temp.reserve(size);
         for(auto x = 0; x < size; ++x) {
@@ -24,11 +21,7 @@ void cruthu::TeraGen::Expand(long double level) {
         }
         nodes[y] = temp;
     }
-    auto finish = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> elapsed = finish - start;
-    std::cout << "\rInitializing: 100.00%, " << elapsed.count() << "s" << std::endl;
 
-    start = std::chrono::high_resolution_clock::now();
     for(auto y = 0; y < size; ++y) {
         bool TOP = false;
         bool BOTTOM = false;
@@ -38,7 +31,6 @@ void cruthu::TeraGen::Expand(long double level) {
             BOTTOM = true;
         }
 
-        std::cout << "\rConnecting: " << std::fixed << std::setprecision(5) << (y/size) * 100.0 << "%" << std::flush;
         for(auto x = 0; x < size; ++x) {
             bool LEFT = false;
             bool RIGHT = false;
@@ -83,44 +75,23 @@ void cruthu::TeraGen::Expand(long double level) {
                 cur.get()->SetNeighbor(nodes.at(y + 1).at(x));
                 cur.get()->SetNeighbor(nodes.at(y - 1).at(x));
             }
+            cur->SetHeight(0.5);
         }
     }
-    finish = std::chrono::high_resolution_clock::now();
-    elapsed = finish - start;
-    std::cout << "\rConnecting: 100.00%, " << elapsed.count() << "s" << std::endl;
 
-    start = std::chrono::high_resolution_clock::now();
-    std::cout << "\rFinding Significant Node: " << std::fixed << std::setprecision(5) << (0) * 100.0 << "%" << std::flush;
-    {
-        std::cout << "\rFinding Significant Node: " << std::fixed << std::setprecision(5) << (.25) * 100.0 << "%" << std::flush;
-        int x = size / 2;
-        std::cout << "\rFinding Significant Node: " << std::fixed << std::setprecision(5) << (.5) * 100.0 << "%" << std::flush;
-        int y = size / 2;
-        std::cout << "\rFinding Significant Node: " << std::fixed << std::setprecision(5) << (.75) * 100.0 << "%" << std::flush;
-        this->mSignificant = nodes.at(y).at(x);
-    }
-    finish = std::chrono::high_resolution_clock::now();
-    elapsed = finish - start;
-    std::cout << "\rFinding Signifiant Node: 100.00%, " << elapsed.count() << "s" << std::endl;
-
-    start = std::chrono::high_resolution_clock::now();
     for(auto y = 0; y < size; ++y) {
-        std::cout << "\rUnloading: " << std::fixed << std::setprecision(5) << (y/size) * 100.0 << "%" << std::flush;
         for(auto x = 0; x < size; ++x) {
-            this->mNodes.push_back(nodes.at(y).at(x));
+            tera->Nodes.push_back(nodes.at(y).at(x));
         }
     }
-    finish = std::chrono::high_resolution_clock::now();
-    elapsed = finish - start;
-    std::cout << "\rUnloading: 100.00%, " << elapsed.count() << "s" << std::endl;
-
 }
 
-std::vector<std::shared_ptr<cruthu::Node>> cruthu::TeraGen::Create() {
-    this->Expand(6);
-    return this->mNodes;
+void cruthu::TeraGen::Create(std::shared_ptr<cruthu::ITera> tera) {
+    this->Expand(tera, 5);
 }
 
-std::shared_ptr<cruthu::Node> cruthu::TeraGen::GetSignificantNode() {
-    return this->mSignificant;
+void cruthu::TeraGen::SetSink(std::shared_ptr<spdlog::sinks::sink> sink, spdlog::level::level_enum level) {
+    this->mLogger = std::make_shared<spdlog::logger>("TeraGen", sink);
+    this->mLogger->set_level(level);
+    this->mLogger->trace("Logger Initilized");
 }

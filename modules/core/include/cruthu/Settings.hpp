@@ -1,8 +1,15 @@
 #ifndef CRUTHU_SETTINGS_HPP
 #define CRUTHU_SETTINGS_HPP
 
+#include <cruthu/IDLLoader.hpp>
+#include <cruthu/ITera.hpp>
+#include <cruthu/ITeraGen.hpp>
+#include <cruthu/IIndexer.hpp>
+#include <cruthu/IForma.hpp>
+
 #include <string>
 #include <vector>
+#include <memory>
 
 namespace cruthu {
 class Settings {
@@ -13,6 +20,7 @@ public:
         std::string LibPath;
         bool SignificantPointIndex;
         bool IndexChain;
+        std::shared_ptr<cruthu::IDLLoader<cruthu::ITera>> Factory;
     };
 
     struct ITeraGen {
@@ -20,6 +28,7 @@ public:
         std::string LibName;
         std::string LibPath;
         bool SignificantPointIndex;
+        std::shared_ptr<cruthu::IDLLoader<cruthu::ITeraGen>> Factory;
     };
 
     struct IIndexer {
@@ -27,12 +36,14 @@ public:
         std::string LibName;
         std::string LibPath;
         bool SignificantPointIndex;
+        std::shared_ptr<cruthu::IDLLoader<cruthu::IIndexer>> Factory;
     };
 
     struct IForma {
         std::string Name;
         std::string LibName;
         std::string LibPath;
+        std::shared_ptr<cruthu::IDLLoader<cruthu::IForma>> Factory;
     };
 
     ITera Tera;

@@ -23,8 +23,13 @@ public:
     std::vector<std::shared_ptr<cruthu::Node>> GetNeighbors();
     std::shared_ptr<cruthu::Node> GetSignificantNode();
 
+    void SetHeight(double height);
+    double GetHeight();
+    std::string to_string();
+
 private:
     boost::uuids::uuid mTag;
+    double mHeight;
     std::vector<std::shared_ptr<cruthu::Node>> mNeighbors;
 };
 } // namespace cruthu
