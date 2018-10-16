@@ -8,6 +8,16 @@
 #include <boost/uuid/uuid_generators.hpp>
 
 namespace cruthu {
+class Terrain {
+public:
+    enum Type {
+        WATER = 0,
+        GRASSLAND,
+        FOREST,
+        MOUNTAIN,
+    };
+};
+
 class Node {
 public:
     Node() : mTag(boost::uuids::random_generator()()) {};
@@ -25,11 +35,14 @@ public:
 
     void SetHeight(double height);
     double GetHeight();
+    void SetTerrain(Terrain::Type type);
+    Terrain::Type GetTerrain();
     std::string to_string();
 
 private:
     boost::uuids::uuid mTag;
     double mHeight;
+    Terrain::Type mTerrain;
     std::vector<std::shared_ptr<cruthu::Node>> mNeighbors;
 };
 } // namespace cruthu

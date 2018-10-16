@@ -18,8 +18,6 @@ public:
         std::string Name;
         std::string LibName;
         std::string LibPath;
-        bool SignificantPointIndex;
-        bool IndexChain;
         std::shared_ptr<cruthu::IDLLoader<cruthu::ITera>> Factory;
     };
 
@@ -27,7 +25,6 @@ public:
         std::string Name;
         std::string LibName;
         std::string LibPath;
-        bool SignificantPointIndex;
         std::shared_ptr<cruthu::IDLLoader<cruthu::ITeraGen>> Factory;
     };
 
@@ -35,7 +32,6 @@ public:
         std::string Name;
         std::string LibName;
         std::string LibPath;
-        bool SignificantPointIndex;
         std::shared_ptr<cruthu::IDLLoader<cruthu::IIndexer>> Factory;
     };
 
@@ -43,6 +39,7 @@ public:
         std::string Name;
         std::string LibName;
         std::string LibPath;
+        std::string IndexBefore;
         std::shared_ptr<cruthu::IDLLoader<cruthu::IForma>> Factory;
     };
 

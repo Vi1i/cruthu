@@ -1,5 +1,5 @@
-#ifndef CRUTHU_FORMACARVER_HPP
-#define CRUTHU_FORMACARVER_HPP
+#ifndef CRUTHU_FORMAPERLIN_HPP
+#define CRUTHU_FORMAPERLIN_HPP
 
 #include <cruthu/IForma.hpp>
 #include <cruthu/ITera.hpp>
@@ -7,10 +7,10 @@
 #include <memory>
 
 namespace cruthu {
-class FormaCarver : public IForma {
+class FormaPerlin : public IForma {
 public:
-    FormaCarver() = default;
-    ~FormaCarver() = default;
+    FormaPerlin() = default;
+    ~FormaPerlin() = default;
 
     virtual void Modify(std::shared_ptr<cruthu::ITera> tera);
     virtual void SetSink(std::shared_ptr<spdlog::sinks::sink> sink, spdlog::level::level_enum level);
@@ -20,11 +20,11 @@ private:
 };
 
 extern "C" {
-	cruthu::FormaCarver * allocator() {
-		return new cruthu::FormaCarver();
+	cruthu::FormaPerlin * allocator() {
+		return new cruthu::FormaPerlin();
 	}
 
-	void deleter(cruthu::FormaCarver * ptr) {
+	void deleter(cruthu::FormaPerlin * ptr) {
 		delete ptr;
 	}
 }

@@ -47,3 +47,11 @@ double cruthu::Node::GetHeight() {
 std::string cruthu::Node::to_string() {
     return boost::uuids::to_string(this->mTag);
 }
+
+void cruthu::Node::SetTerrain(cruthu::Terrain::Type type) {
+    this->mTerrain = type;
+}
+
+cruthu::Terrain::Type cruthu::Node::GetTerrain() {
+    return this->mTerrain;
+}

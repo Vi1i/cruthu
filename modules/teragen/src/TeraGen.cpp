@@ -11,6 +11,8 @@ void cruthu::TeraGen::Expand(std::shared_ptr<cruthu::ITera> tera, long double le
     if(size == HUGE_VAL) {
         size = std::numeric_limits<long double>::max();
     }
+    tera->XSize = size;
+    tera->YSize = size;
 
     std::vector<std::vector<std::shared_ptr<cruthu::Node>>> nodes(size);
     for(auto y = 0; y < size; ++y) {
@@ -80,8 +82,10 @@ void cruthu::TeraGen::Expand(std::shared_ptr<cruthu::ITera> tera, long double le
     }
 
     for(auto y = 0; y < size; ++y) {
+        tera->Export2d.push_back(std::vector<std::shared_ptr<cruthu::Node>>());
         for(auto x = 0; x < size; ++x) {
             tera->Nodes.push_back(nodes.at(y).at(x));
+            tera->Export2d.at(y).push_back(nodes.at(y).at(x));
         }
     }
 }

@@ -117,33 +117,32 @@ void cruthu::Cruthu::Run() {
         teraGen->SetSink(this->mLogger->sinks().at(0), this->mLogger->level());
     }
     this->mLogger->debug("TeraGen instance created");
-    std::vector<std::shared_ptr<cruthu::IIndexer>> indexers;
+    std::map<std::string, std::shared_ptr<cruthu::IIndexer>> indexers;
     for(const auto indexer : this->mSettings.Indexers) {
         std::shared_ptr<cruthu::IIndexer> i(indexer.Factory->DLGetInstance());
         if(!this->mLogger->sinks().empty()) {
             i->SetSink(this->mLogger->sinks().at(0), this->mLogger->level());
         }
-        indexers.push_back(i);
+        indexers[indexer.Name] = i;
         this->mLogger->debug("Indexer(" + indexer.Name + ") instance created");
     }
-    std::vector<std::shared_ptr<cruthu::IForma>> formas;
+    std::map<std::string, std::shared_ptr<cruthu::IForma>> formas;
     for(const auto & forma : this->mSettings.Formas) {
         std::shared_ptr<cruthu::IForma> f(forma.Factory->DLGetInstance());
         if(!this->mLogger->sinks().empty()) {
             f->SetSink(this->mLogger->sinks().at(0), this->mLogger->level());
         }
-        formas.push_back(f);
+        formas[forma.Name] = f;
         this->mLogger->debug("Forma(" + forma.Name + ") instance created");
     }
     
     teraGen->Create(tera);
-    indexers.at(0)->Index(tera);
-    int size = tera->IndexedNodes.size() / 100;
-    for(auto z = 0; z < size; ++z) {
-        this->mLogger->debug("Forma Iteration: " + std::to_string(size) + "/" + std::to_string(z));
-        formas.at(0)->Modify(tera);
-    }
+    indexers["Core"]->Index(tera);
+    formas["Perlin"]->Modify(tera);
+    indexers["Mountains"]->Index(tera);
+    formas["Mountains"]->Modify(tera);
 
+    this->mLogger->debug("Generating Image");
     this->CreateImage(tera);
 }
 
@@ -172,8 +171,6 @@ bool cruthu::Cruthu::ParseConfig() {
         cruthu::Settings::ITera settingsITera;
         settingsITera.Name = std::string(cfgITera.lookup("Name"));
         settingsITera.LibName = std::string(cfgITera.lookup("LibName"));
-        settingsITera.SignificantPointIndex = bool(cfgITera.lookup("SignificantPointIndex"));
-        settingsITera.IndexChain = bool(cfgITera.lookup("IndexChain"));
 
         /***************************************************************************
          *  Read ITeraGen settings
@@ -183,7 +180,6 @@ bool cruthu::Cruthu::ParseConfig() {
         cruthu::Settings::ITeraGen settingsITeraGen;
         settingsITeraGen.Name = std::string(cfgITeraGen.lookup("Name"));
         settingsITeraGen.LibName = std::string(cfgITeraGen.lookup("LibName"));
-        settingsITeraGen.SignificantPointIndex = bool(cfgITeraGen.lookup("SignificantPointIndex"));
 
         /***************************************************************************
          *  Read IIndexer settings
@@ -198,7 +194,6 @@ bool cruthu::Cruthu::ParseConfig() {
 
             settingsIIndexer.Name = std::string(cfgIndexer.lookup("Name"));
             settingsIIndexer.LibName = std::string(cfgIndexer.lookup("LibName"));
-            settingsIIndexer.SignificantPointIndex = bool(cfgIndexer.lookup("SignificantPointIndex"));
 
             settingsIIndexers.push_back(settingsIIndexer);
         }
@@ -216,6 +211,20 @@ bool cruthu::Cruthu::ParseConfig() {
 
             settingsIForma.Name = std::string(cfgForma.lookup("Name"));
             settingsIForma.LibName = std::string(cfgForma.lookup("LibName"));
+            settingsIForma.IndexBefore = std::string(cfgForma.lookup("IndexBefore"));
+            if(!settingsIForma.IndexBefore.empty()) {
+                bool foundIndex(false);
+                for(auto & indexer : settingsIIndexers) {
+                    if(indexer.Name == settingsIForma.IndexBefore) {
+                        foundIndex = true;
+                    }
+                }
+                if(!foundIndex) {
+                    this->mLogger->warn("Could not find Indexer(" + settingsIForma.IndexBefore + ") for Forma(" + settingsIForma.Name + ")");
+                    this->mLogger->warn("Setting Forma(" + settingsIForma.Name + ") IndexBefore to an empty string");
+                    settingsIForma.IndexBefore = "";
+                }
+            }
 
             settingsIFormas.push_back(settingsIForma);
         }
@@ -418,15 +427,48 @@ bool cruthu::Cruthu::CreateDefaultConfigFile() {
 }
 
 void cruthu::Cruthu::CreateImage(std::shared_ptr<cruthu::ITera> tera) {
-    double long size = std::sqrt(tera->Nodes.size());
-    Magick::Image image(Magick::Geometry(size, size), "white");
-    image.type(Magick::GrayscaleType);
+    double long size = tera->Export2d.size();
+    auto color = Magick::ColorHSL(0,0,0);
+    Magick::Image image(Magick::Geometry(size, size), color);
+    image.magick("png");
+    //image.type(Magick::TrueColorType);
+    //image.type(Magick::GrayscaleType);
 
     for(auto y = 0; y < size; ++y) {
         for(auto x = 0; x < size; ++x) {
-            double color = tera->Nodes.at((y * size) + x)->GetHeight();
-            this->mLogger->trace(tera->Nodes.at((y * size) + x)->to_string() + ": " + std::to_string(color));
-            image.pixelColor(y, x, Magick::ColorGray(color));
+            double height = tera->Export2d.at(y).at(x)->GetHeight();
+            switch(tera->Export2d.at(y).at(x)->GetTerrain()) {
+            case cruthu::Terrain::Type::WATER:
+                this->mLogger->trace("Color: WATER");
+                color = Magick::Color("blue");
+                break;
+            case cruthu::Terrain::Type::GRASSLAND:
+                this->mLogger->trace("Color: GRASSLAND");
+                image.pixelColor(y, x, "green");
+                color = Magick::Color("green");
+                break;
+            case cruthu::Terrain::Type::FOREST:
+                this->mLogger->trace("Color: FOREST");
+                color = Magick::Color("darkGreen");
+                break;
+            case cruthu::Terrain::Type::MOUNTAIN:
+                this->mLogger->trace("Color: MOUNTAIN");
+                if(height < .4) {
+                    color = Magick::Color("tan1");
+                }else if(height < .6) {
+                    color = Magick::Color("tan2");
+                }else if(height < .8) {
+                    color = Magick::Color("tan3");
+                }else {
+                    color = Magick::Color("tan4");
+                }
+                break;
+            default:
+                this->mLogger->trace("Color: DEFAULT");
+                color = Magick::Color("black");
+            }
+
+            image.pixelColor(y, x, color);
         }
     }
 

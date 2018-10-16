@@ -14,7 +14,11 @@ class ITera {
 public:
     std::vector<std::shared_ptr<cruthu::Node>> Nodes;
     std::vector<std::shared_ptr<cruthu::Node>> IndexedNodes;
+    std::vector<std::vector<std::shared_ptr<cruthu::Node>>> Export2d;
     std::shared_ptr<cruthu::Node> SignificantNode;
+    int XSize;
+    int YSize;
+    
 
     virtual ~ITera() = default;
 
