@@ -3,20 +3,25 @@
 
 #include <cruthu/IForma.hpp>
 #include <cruthu/ITera.hpp>
+#include <cruthu/Node.hpp>
 
 #include <memory>
+#include <random>
 
 namespace cruthu {
 class FormaMountains : public IForma {
 public:
-    FormaMountains() = default;
+    FormaMountains();
     ~FormaMountains() = default;
 
     virtual void Modify(std::shared_ptr<cruthu::ITera> tera);
+    virtual void Step(std::shared_ptr<cruthu::ITera> tera);
     virtual void SetSink(std::shared_ptr<spdlog::sinks::sink> sink, spdlog::level::level_enum level);
 
 private:
-    std::shared_ptr<spdlog::logger> mLogger;
+    std::shared_ptr<cruthu::Node> mNode;
+    unsigned int mStepsTaken;
+    bool mAllMountains;
 };
 
 extern "C" {
