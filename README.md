@@ -53,6 +53,12 @@ Since this is not a package from a package manager, it cannot be removed this wa
 cat install_manifest.txt | xargs rm {}
 ```
 
+##
+Creating gif:
+`convert -loop 0 -delay 10 $(ls final.2.* | sort -V | grep -v final.2.png) final.2.png out.gif`
+creating pause in fig:
+`convert out.2.pause.gif \( +clone -set delay 500 \) +swap +delete out.2.pause.gif`
+
 ## License
 
 This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details
