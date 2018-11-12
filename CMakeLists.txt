@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.9)
 project(CruthuCore)
 
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Debug)
+endif()
 
 set(CRUTHUCORE_MAJOR_VERSION 0)
 set(CRUTHUCORE_MINOR_VERSION 1)

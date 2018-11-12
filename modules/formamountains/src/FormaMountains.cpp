@@ -12,6 +12,10 @@ cruthu::FormaMountains::FormaMountains() {
 }
 
 void cruthu::FormaMountains::Step(std::shared_ptr<cruthu::ITera> tera) {
+    if(tera->IndexedNodes.size() < 1) {
+        this->mLogger->warn("No mountains indexed");
+        return;
+    }
     if(this->mNode.get() == nullptr) {
         // If we are in here, that means this would be the "first" step taken
         this->mNode = tera->GetIndexedNode();
@@ -47,6 +51,10 @@ void cruthu::FormaMountains::Step(std::shared_ptr<cruthu::ITera> tera) {
 }
 
 void cruthu::FormaMountains::Modify(std::shared_ptr<cruthu::ITera> tera) {
+    if(tera->IndexedNodes.size() < 1) {
+        this->mLogger->warn("No mountains indexed");
+        return;
+    }
     bool allMountains(true);
     std::mt19937 rng;
     rng.seed(this->mSeed);

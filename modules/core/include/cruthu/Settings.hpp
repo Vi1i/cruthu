@@ -14,6 +14,15 @@
 namespace cruthu {
 class Settings {
 public:
+    struct Cruthu {
+        enum Types {
+            STEP = 0,
+            FULL = 1,
+        };
+        unsigned int ThreadCount;
+        unsigned int Seed;
+        cruthu::Settings::Cruthu::Types Type;
+    };
     struct ITera {
         std::string Name;
         std::string LibName;
@@ -22,9 +31,14 @@ public:
     };
 
     struct ITeraGen {
+        enum Types {
+            D2 = 0,
+            D3 = 1,
+        };
         std::string Name;
         std::string LibName;
         std::string LibPath;
+        cruthu::Settings::ITeraGen::Types Type;
         std::shared_ptr<cruthu::IDLLoader<cruthu::ITeraGen>> Factory;
     };
 
@@ -39,10 +53,19 @@ public:
         std::string Name;
         std::string LibName;
         std::string LibPath;
-        std::string IndexBefore;
+        unsigned int Steps;
+        unsigned int Agents;
+        unsigned int Iterations;
+        bool Parallelizable;
+        bool Parallelable;
+        std::vector<std::string> IndexBefore;
+        bool IndexRunning;
+        std::vector<std::string> ExcludeGlobal;
+        std::vector<std::string> ExcludeLocal;
         std::shared_ptr<cruthu::IDLLoader<cruthu::IForma>> Factory;
     };
 
+    Cruthu CruthuS;
     ITera Tera;
     ITeraGen TeraGen;
     std::vector<IIndexer> Indexers;

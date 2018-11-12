@@ -59,10 +59,15 @@ cruthu::Cruthu::Cruthu(std::shared_ptr<spdlog::sinks::sink> sink, spdlog::level:
 
 cruthu::Cruthu::~Cruthu() {
     this->mLogger->info("Closing libraries");
+    this->mTera.~shared_ptr();
+    //this->mTera.reset();
     this->mSettings.Tera.Factory->DLCloseLib();
     this->mLogger->debug("Closed ITera library");
+    //this->mTeraGen.~shared_ptr();
+    this->mTeraGen.reset();
     this->mSettings.TeraGen.Factory->DLCloseLib();
     this->mLogger->debug("Closed ITeraGen library");
+
     for(auto & indexer : this->mSettings.Indexers) {
         indexer.Factory->DLCloseLib();
         this->mLogger->debug("Closed IIindexer library");
@@ -102,19 +107,16 @@ bool cruthu::Cruthu::Initialize() {
     if(this->ParseConfig() && this->FindLibraries() && this->OpenLibraries()) {
         initialized = true;
     }
-    return initialized;
-}
 
-void cruthu::Cruthu::Run() {
     this->mLogger->info("Creating instances");
-    std::shared_ptr<cruthu::ITera> tera(this->mSettings.Tera.Factory->DLGetInstance());
+    this->mTera = std::shared_ptr<cruthu::ITera>(this->mSettings.Tera.Factory->DLGetInstance());
     if(!this->mLogger->sinks().empty()) {
-        tera->SetSink(this->mLogger->sinks().at(0), this->mLogger->level());
+        this->mTera->SetSink(this->mLogger->sinks().at(0), this->mLogger->level());
     }
     this->mLogger->debug("Tera instance created");
-    std::shared_ptr<cruthu::ITeraGen> teraGen(this->mSettings.TeraGen.Factory->DLGetInstance());
+    this->mTeraGen = std::shared_ptr<cruthu::ITeraGen>(this->mSettings.TeraGen.Factory->DLGetInstance());
     if(!this->mLogger->sinks().empty()) {
-        teraGen->SetSink(this->mLogger->sinks().at(0), this->mLogger->level());
+        this->mTeraGen->SetSink(this->mLogger->sinks().at(0), this->mLogger->level());
     }
     this->mLogger->debug("TeraGen instance created");
     std::map<std::string, std::shared_ptr<cruthu::IIndexer>> indexers;
@@ -131,19 +133,46 @@ void cruthu::Cruthu::Run() {
         std::shared_ptr<cruthu::IForma> f(forma.Factory->DLGetInstance());
         if(!this->mLogger->sinks().empty()) {
             f->SetSink(this->mLogger->sinks().at(0), this->mLogger->level());
+            f->SetSeed(this->mSettings.CruthuS.Seed);
         }
         formas[forma.Name] = f;
         this->mLogger->debug("Forma(" + forma.Name + ") instance created");
     }
-    
-    teraGen->Create(tera);
-    indexers["Core"]->Index(tera);
-    formas["Perlin"]->Modify(tera);
-    indexers["Mountains"]->Index(tera);
-    formas["Mountains"]->Modify(tera);
 
-    this->mLogger->debug("Generating Image");
-    this->CreateImage(tera);
+    this->mOperations.push_back({indexers["Core"], {formas["Perlin"]}, 1024*1024});
+    this->mOperations.push_back({indexers["Mountains"], {formas["Mountains"]}, 10000});
+    
+    return initialized;
+}
+
+void cruthu::Cruthu::Run() {
+    this->mLogger->info("Starting Run...");
+    this->mLogger->debug("ITeraGen->Create(ITera)");
+    this->mTeraGen->Create(this->mTera);
+    unsigned int count(0);
+    for (auto operation : this->mOperations) {
+        std::string optStr("Operation[" + std::to_string(count) + "]");
+        this->mLogger->debug(optStr + ".Index");
+        operation.index->Index(this->mTera);
+        for(auto step = 0; step < operation.steps; ++step) {
+            if(step % 10240 == 0) {
+                this->CreateImage(this->mTera, "final." + std::to_string(this->mSettings.CruthuS.Seed) + "." + std::to_string(step));
+            }
+            unsigned int countF(0);
+            for (auto forma : operation.formas) {
+                std::string formaStr(".Forma[" + std::to_string(countF) + "]");
+                this->mLogger->debug(optStr + ".[" + std::to_string(step) + "]" + formaStr);
+                forma->Step(this->mTera);
+                ++countF;
+            }
+        }
+        ++count;
+    }
+
+    // This allows for the shared_ptr to call destructors on indexers and formas before the libs are closed
+    this->mOperations.clear();
+
+    this->CreateImage(this->mTera, "final." + std::to_string(this->mSettings.CruthuS.Seed));
 }
 
 bool cruthu::Cruthu::ParseConfig() {
@@ -164,13 +193,36 @@ bool cruthu::Cruthu::ParseConfig() {
         const libconfig::Setting & cfgSettings = root["Settings"];
 
         /***************************************************************************
+         *  Read Logging settings
+         **************************************************************************/
+        this->mLogger->debug("Reading in Logger settings");
+        const libconfig::Setting & cfgLogging = cfgSettings["Logging"];
+        this->mLogger->set_level(static_cast<spdlog::level::level_enum>(static_cast<int>(cfgLogging.lookup("Level"))));
+        this->mLogger->info("Reset logger level to: " + std::string(to_c_str(this->mLogger->level())));
+
+        /***************************************************************************
+         *  Read Cruthu settings
+         **************************************************************************/
+        this->mLogger->debug("Reading in Cruthu settings");
+        const libconfig::Setting & cfgCruthu = cfgSettings["Cruthu"];
+        cruthu::Settings::Cruthu settingsCruthu;
+        settingsCruthu.ThreadCount = cfgCruthu.lookup("ThreadCount");
+        this->mLogger->trace("Read Settings.Cruthu.ThreadCount: " + std::to_string(settingsCruthu.ThreadCount));
+        settingsCruthu.Seed = cfgCruthu.lookup("Seed");
+        this->mLogger->trace("Read Settings.Cruthu.Seed: " + std::to_string(settingsCruthu.Seed));
+        settingsCruthu.Type = static_cast<cruthu::Settings::Cruthu::Types>(static_cast<int>(cfgCruthu.lookup("Type")));
+        this->mLogger->trace("Read Settings.Cruthu.Type: " + std::to_string(settingsCruthu.Type));
+
+        /***************************************************************************
          *  Read ITera settings
          **************************************************************************/
         this->mLogger->debug("Reading in ITera settings");
         const libconfig::Setting & cfgITera = cfgSettings["ITera"];
         cruthu::Settings::ITera settingsITera;
         settingsITera.Name = std::string(cfgITera.lookup("Name"));
+        this->mLogger->trace("Read Settings.ITera.Name: " + settingsITera.Name);
         settingsITera.LibName = std::string(cfgITera.lookup("LibName"));
+        this->mLogger->trace("Read Settings.ITera.LibName: " + settingsITera.LibName);
 
         /***************************************************************************
          *  Read ITeraGen settings
@@ -179,7 +231,11 @@ bool cruthu::Cruthu::ParseConfig() {
         const libconfig::Setting & cfgITeraGen = cfgSettings["ITeraGen"];
         cruthu::Settings::ITeraGen settingsITeraGen;
         settingsITeraGen.Name = std::string(cfgITeraGen.lookup("Name"));
+        this->mLogger->trace("Read Settings.ITeraGen.Name: " + settingsITeraGen.Name);
         settingsITeraGen.LibName = std::string(cfgITeraGen.lookup("LibName"));
+        this->mLogger->trace("Read Settings.ITeraGen.LibName: " + settingsITeraGen.LibName);
+        settingsITeraGen.Type = static_cast<cruthu::Settings::ITeraGen::Types>(static_cast<int>(cfgITeraGen.lookup("Type")));
+        this->mLogger->trace("Read Settings.ITeraGen.Type: " + std::to_string(settingsITeraGen.Type));
 
         /***************************************************************************
          *  Read IIndexer settings
@@ -193,7 +249,9 @@ bool cruthu::Cruthu::ParseConfig() {
             cruthu::Settings::IIndexer settingsIIndexer;
 
             settingsIIndexer.Name = std::string(cfgIndexer.lookup("Name"));
+            this->mLogger->trace("Read Settings.IIndexer.Indexers.[" + std::to_string(z) + "].Name: " + settingsIIndexer.Name);
             settingsIIndexer.LibName = std::string(cfgIndexer.lookup("LibName"));
+            this->mLogger->trace("Read Settings.IIndexer.Indexers.[" + std::to_string(z) + "].LibName: " + settingsIIndexer.LibName);
 
             settingsIIndexers.push_back(settingsIIndexer);
         }
@@ -210,19 +268,40 @@ bool cruthu::Cruthu::ParseConfig() {
             cruthu::Settings::IForma settingsIForma;
 
             settingsIForma.Name = std::string(cfgForma.lookup("Name"));
+            this->mLogger->trace("Read Settings.IForma.Formas.[" + std::to_string(z) + "].Requirements.Name");
             settingsIForma.LibName = std::string(cfgForma.lookup("LibName"));
-            settingsIForma.IndexBefore = std::string(cfgForma.lookup("IndexBefore"));
+            this->mLogger->trace("Read Settings.IForma.Formas.[" + std::to_string(z) + "].Requirements.LibName");
+            settingsIForma.Steps = cfgForma.lookup("Steps");
+            this->mLogger->trace("Read Settings.IForma.Formas.[" + std::to_string(z) + "].Requirements.Steps");
+            settingsIForma.Agents = cfgForma.lookup("Agents");
+            this->mLogger->trace("Read Settings.IForma.Formas.[" + std::to_string(z) + "].Requirements.Agents");
+            settingsIForma.Iterations = cfgForma.lookup("Iterations");
+            this->mLogger->trace("Read Settings.IForma.Formas.[" + std::to_string(z) + "].Requirements.Iterations");
+            settingsIForma.Parallelizable = cfgForma.lookup("Parallelizable");
+            this->mLogger->trace("Read Settings.IForma.Formas.[" + std::to_string(z) + "].Requirements.Parallelizable");
+            settingsIForma.Parallelable = cfgForma.lookup("Parallelable");
+            this->mLogger->trace("Read Settings.IForma.Formas.[" + std::to_string(z) + "].Requirements.Parallelable");
+            settingsIForma.IndexRunning = cfgForma.lookup("Requirements.Index.Running");
+            this->mLogger->trace("Read Settings.IForma.Formas.[" + std::to_string(z) + "].Requirements.Requirements.Index.Running");
+            //settingsIForma.IndexBefore = std::string(cfgForma.lookup("Index.Before"));
+            const libconfig::Setting & cfgFormaRequirementsIndexBefore = cfgForma.lookup("Requirements.Index.Before");
+            for(auto x = 0; x < cfgFormaRequirementsIndexBefore.getLength(); ++x) {
+                settingsIForma.IndexBefore.push_back(cfgFormaRequirementsIndexBefore[x]);
+                this->mLogger->trace("Read Settings.IForma.Formas.[" + std::to_string(z) + "].Requirements.Requirements.Index.Before[" + std::to_string(x) + "]");
+            }
             if(!settingsIForma.IndexBefore.empty()) {
-                bool foundIndex(false);
-                for(auto & indexer : settingsIIndexers) {
-                    if(indexer.Name == settingsIForma.IndexBefore) {
-                        foundIndex = true;
+                for(const auto & IndexerName : settingsIForma.IndexBefore) {
+                    bool foundIndex(false);
+                    for(auto & indexer : settingsIIndexers) {
+                        if(indexer.Name == IndexerName) {
+                            foundIndex = true;
+                        }
                     }
-                }
-                if(!foundIndex) {
-                    this->mLogger->warn("Could not find Indexer(" + settingsIForma.IndexBefore + ") for Forma(" + settingsIForma.Name + ")");
-                    this->mLogger->warn("Setting Forma(" + settingsIForma.Name + ") IndexBefore to an empty string");
-                    settingsIForma.IndexBefore = "";
+                    if(!foundIndex) {
+                        this->mLogger->warn("Could not find Indexer(" + IndexerName + ") for Forma(" + settingsIForma.Name + ")");
+                        //this->mLogger->warn("Setting Forma(" + settingsIForma.Name + ") IndexBefore to an empty string");
+                        settingsIForma.IndexBefore.clear();
+                    }
                 }
             }
 
@@ -233,6 +312,7 @@ bool cruthu::Cruthu::ParseConfig() {
          *  Cache settings
          **************************************************************************/
         this->mLogger->debug("Caching settings");
+        this->mSettings.CruthuS = settingsCruthu;
         this->mSettings.Tera = settingsITera;
         this->mSettings.TeraGen = settingsITeraGen;
         this->mSettings.Indexers = settingsIIndexers;
@@ -426,7 +506,8 @@ bool cruthu::Cruthu::CreateDefaultConfigFile() {
     return false;
 }
 
-void cruthu::Cruthu::CreateImage(std::shared_ptr<cruthu::ITera> tera) {
+void cruthu::Cruthu::CreateImage(std::shared_ptr<cruthu::ITera> tera, std::string filename) {
+    this->mLogger->debug("Generating Image");
     double long size = tera->Export2d.size();
     auto color = Magick::ColorHSL(0,0,0);
     Magick::Image image(Magick::Geometry(size, size), color);
@@ -473,5 +554,5 @@ void cruthu::Cruthu::CreateImage(std::shared_ptr<cruthu::ITera> tera) {
     }
 
     image.syncPixels();
-    image.write("temp.png");
+    image.write(filename + ".png");
 }

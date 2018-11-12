@@ -15,7 +15,6 @@
 
 int main(int argc, char ** argv) {
     auto log_level = spdlog::level::trace;
-    log_level = spdlog::level::debug;
     auto sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
     auto logger = std::make_shared<spdlog::logger>("Cruthu-Cli", sink);
     logger->set_level(log_level);
@@ -29,5 +28,6 @@ int main(int argc, char ** argv) {
     }
 
     world.Run();
+    logger->info("Good bye");
     return EXIT_SUCCESS;
 }

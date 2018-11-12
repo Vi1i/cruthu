@@ -13,6 +13,7 @@ void cruthu::TeraGen::Expand(std::shared_ptr<cruthu::ITera> tera, long double le
     }
     tera->XSize = size;
     tera->YSize = size;
+    this->mLogger->debug("Dimensions: (" + std::to_string((int)size) + "," + std::to_string((int)size) + ")");
 
     std::vector<std::vector<std::shared_ptr<cruthu::Node>>> nodes(size);
     for(auto y = 0; y < size; ++y) {
@@ -43,6 +44,7 @@ void cruthu::TeraGen::Expand(std::shared_ptr<cruthu::ITera> tera, long double le
             }
 
             std::shared_ptr<cruthu::Node> cur(nodes[y][x]);
+            this->mLogger->trace(cur->to_string());
             if(TOP && LEFT) {
                 cur.get()->SetNeighbor(nodes.at(y).at(x + 1));
                 cur.get()->SetNeighbor(nodes.at(y + 1).at(x));
