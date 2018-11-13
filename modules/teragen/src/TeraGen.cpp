@@ -79,7 +79,7 @@ void cruthu::TeraGen::Expand(std::shared_ptr<cruthu::ITera> tera, long double le
                 cur.get()->SetNeighbor(nodes.at(y + 1).at(x));
                 cur.get()->SetNeighbor(nodes.at(y - 1).at(x));
             }
-            cur->SetHeight(0.5);
+            cur->SetHeight(0.4);
         }
     }
 

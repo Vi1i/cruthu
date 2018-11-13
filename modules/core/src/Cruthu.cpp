@@ -133,14 +133,14 @@ bool cruthu::Cruthu::Initialize() {
         std::shared_ptr<cruthu::IForma> f(forma.Factory->DLGetInstance());
         if(!this->mLogger->sinks().empty()) {
             f->SetSink(this->mLogger->sinks().at(0), this->mLogger->level());
-            f->SetSeed(this->mSettings.CruthuS.Seed);
         }
+        f->SetSeed(this->mSettings.CruthuS.Seed);
         formas[forma.Name] = f;
         this->mLogger->debug("Forma(" + forma.Name + ") instance created");
     }
 
     this->mOperations.push_back({indexers["Core"], {formas["Perlin"]}, 1024*1024});
-    this->mOperations.push_back({indexers["Mountains"], {formas["Mountains"]}, 10000});
+    this->mOperations.push_back({indexers["Mountains"], {formas["Mountains"]}, 0});
     
     return initialized;
 }
@@ -154,16 +154,25 @@ void cruthu::Cruthu::Run() {
         std::string optStr("Operation[" + std::to_string(count) + "]");
         this->mLogger->debug(optStr + ".Index");
         operation.index->Index(this->mTera);
-        for(auto step = 0; step < operation.steps; ++step) {
-            if(step % 10240 == 0) {
-                this->CreateImage(this->mTera, "final." + std::to_string(this->mSettings.CruthuS.Seed) + "." + std::to_string(step));
+        if(operation.steps > 0) {
+            for(auto step = 0; step < operation.steps; ++step) {
+                if(step % (operation.steps / 100) == 0) {
+                    //this->CreateImage(this->mTera, "final." + std::to_string(this->mSettings.CruthuS.Seed) + + + "." + std::to_string(step));
+                }
+                unsigned int countF(0);
+                for (auto forma : operation.formas) {
+                    std::string formaStr(".Forma[" + std::to_string(countF) + "]");
+                    if(step % (operation.steps / 100) == 0) {
+                        this->mLogger->debug(optStr + ".[" + std::to_string(step) + "]" + formaStr);
+                    }
+                    this->mLogger->trace(optStr + ".[" + std::to_string(step) + "]" + formaStr);
+                    forma->Step(this->mTera);
+                    ++countF;
+                }
             }
-            unsigned int countF(0);
+        } else {
             for (auto forma : operation.formas) {
-                std::string formaStr(".Forma[" + std::to_string(countF) + "]");
-                this->mLogger->debug(optStr + ".[" + std::to_string(step) + "]" + formaStr);
-                forma->Step(this->mTera);
-                ++countF;
+                    forma->Modify(this->mTera);
             }
         }
         ++count;
