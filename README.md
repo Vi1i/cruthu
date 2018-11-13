@@ -2,6 +2,9 @@
 Cruthú (Gaelic for "creation", pronounced cra-HU), provides a platform world generation.
 Cruthú is highly modular, allowing modules to be swapped in, swapped out, or re-ordered to achieve desired results.
 
+<img src="https://github.com/Vi1i/cruthu/blob/master/docs/images/out.2.pause.gif" height="256" width="256">
+
+
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development and or use.
