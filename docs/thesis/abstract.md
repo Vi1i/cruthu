@@ -22,4 +22,5 @@ Cruthú is also be highly modular, allowing modules to be swapped in, swapped ou
 
 We have built a prototype model that implements the main features, and further work  will allow for individual prototypes to be integrated together into a working system.[<sup>1</sup>](#1)
 
-<a class="anchor" id="1">(Robert) I'm not sure what this last phrase means.</a>
+### Comments
+<a class="anchor" id="1">[1] (Robert) I'm not sure what this last phrase means.</a>
