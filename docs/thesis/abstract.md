@@ -23,6 +23,8 @@ Cruthú is highly modular, allowing components to be swapped in, swapped out, or
 A prototype model was built that implements the main features, and further work will allow for individual algorithms to be integrated in more complex interactions.
 
 ### Comments
-<a class="anchor" id="1">[1] (Jonathan) The term framework is not used.</a>
+<a class="anchor" id="1">[1] ~~(Robert) I'm not sure what this last phrase means.~~</a>
 
-<a class="anchor" id="1">[2] (Jonathan) Talk a little more about terrain generation, perhaps an example.</a>
+<a class="anchor" id="1">[2] (Jonathan) The term framework is not used.</a>
+
+<a class="anchor" id="1">[3] (Jonathan) Talk a little more about terrain generation, perhaps an example.</a>
