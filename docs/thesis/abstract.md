@@ -24,4 +24,5 @@ A prototype model was built that implements the main features, and further work 
 
 ### Comments
 <a class="anchor" id="1">[1] (Jonathan) The term framework is not used.</a>
+
 <a class="anchor" id="1">[2] (Jonathan) Talk a little more about terrain generation, perhaps an example.</a>
