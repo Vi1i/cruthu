@@ -20,7 +20,7 @@ namespace {
             type = cruthu::Terrain::Type::WATER;
         }else if(val < .7) {
             type = cruthu::Terrain::Type::GRASSLAND;
-        }else if(val < .79) {
+        }else if(val < .81) {
             type = cruthu::Terrain::Type::FOREST;
         }else{
             type = cruthu::Terrain::Type::MOUNTAIN;
@@ -35,7 +35,7 @@ namespace {
             name = "WATER";
         }else if(val < .7) {
             name = "GRASSLAND";
-        }else if(val < .79) {
+        }else if(val < .81) {
             name = "FOREST";
         }else{
             name = "MOUNTAIN";
@@ -51,6 +51,7 @@ cruthu::FormaPerlin::FormaPerlin() {
 }
 
 void cruthu::FormaPerlin::Step(std::shared_ptr<cruthu::ITera> tera) {
+    this->mLogger->trace("Hello");
     std::string stepStr("[" + std::to_string(this->mSeed) + "].[" + std::to_string(this->mStepsTaken) + "]");
     std::mt19937 rng;
     rng.seed(this->mSeed);
@@ -64,6 +65,7 @@ void cruthu::FormaPerlin::Step(std::shared_ptr<cruthu::ITera> tera) {
     double X = (double) x / (double)tera->XSize;
     double val = pn.Noise(10 * X, 10 * Y, .8);
     tera->Nodes.at(pos)->SetTerrain(Threshold(val));
+    tera->Nodes.at(pos)->SetHeight(val);
     this->mLogger->trace(stepStr + ".(" + std::to_string(x) + "," + std::to_string(y) + ").[" + 
                          tera->Nodes.at(pos)->to_string() + "].[" + std::to_string(val) +
                          + "].[" + Threshold_Name(val) + "]");

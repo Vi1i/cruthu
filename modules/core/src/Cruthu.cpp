@@ -130,17 +130,31 @@ bool cruthu::Cruthu::Initialize() {
     }
     std::map<std::string, std::shared_ptr<cruthu::IForma>> formas;
     for(const auto & forma : this->mSettings.Formas) {
-        std::shared_ptr<cruthu::IForma> f(forma.Factory->DLGetInstance());
-        if(!this->mLogger->sinks().empty()) {
-            f->SetSink(this->mLogger->sinks().at(0), this->mLogger->level());
+        for(auto z = 0; z < forma.Agents; ++z) {
+            std::shared_ptr<cruthu::IForma> f(forma.Factory->DLGetInstance());
+            if(!this->mLogger->sinks().empty()) {
+                f->SetSink(this->mLogger->sinks().at(0), this->mLogger->level());
+            }
+            f->SetSeed(this->mSettings.CruthuS.Seed);
+                    formas[forma.Name + std::to_string(z)] = f;
+                    this->mLogger->debug("Forma(" + forma.Name + std::to_string(z) + ") instance created");
         }
-        f->SetSeed(this->mSettings.CruthuS.Seed);
-        formas[forma.Name] = f;
-        this->mLogger->debug("Forma(" + forma.Name + ") instance created");
     }
 
-    this->mOperations.push_back({indexers["Core"], {formas["Perlin"]}, 1024*1024});
-    this->mOperations.push_back({indexers["Mountains"], {formas["Mountains"]}, 0});
+    this->mOperations.push_back({indexers["Core"], {formas["Perlin0"]}, 1024*1024});
+    this->mOperations.push_back({indexers["Mountains"], {formas["Mountains0"]}, 0});
+    this->mOperations.push_back({indexers["Mountains"], {
+            formas["Rivers0"],
+            formas["Rivers1"],
+            formas["Rivers2"],
+            formas["Rivers3"],
+            formas["Rivers4"],
+            formas["Rivers5"],
+            formas["Rivers6"],
+            formas["Rivers7"],
+            formas["Rivers8"],
+            formas["Rivers9"]
+            }, 1000});
     
     return initialized;
 }
@@ -543,15 +557,19 @@ void cruthu::Cruthu::CreateImage(std::shared_ptr<cruthu::ITera> tera, std::strin
                 break;
             case cruthu::Terrain::Type::MOUNTAIN:
                 this->mLogger->trace("Color: MOUNTAIN");
-                if(height < .4) {
+                if(height < .87) {
                     color = Magick::Color("tan1");
-                }else if(height < .6) {
+                }else if(height < .92) {
                     color = Magick::Color("tan2");
-                }else if(height < .8) {
+                }else if(height < .97) {
                     color = Magick::Color("tan3");
                 }else {
                     color = Magick::Color("tan4");
                 }
+                break;
+            case cruthu::Terrain::Type::RIVER:
+                this->mLogger->trace("Color: River");
+                color = Magick::Color("lightBlue");
                 break;
             default:
                 this->mLogger->trace("Color: DEFAULT");

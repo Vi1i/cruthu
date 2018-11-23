@@ -44,7 +44,7 @@ void cruthu::FormaMountains::Step(std::shared_ptr<cruthu::ITera> tera) {
     rng.seed(this->mSeed);
     rng.discard(this->mStepsTaken);
 
-    std::uniform_real_distribution<double> height(0,1);
+    std::uniform_real_distribution<double> height(.81,1.0);
 
     this->mNode->SetHeight(height(rng));
     if(this->mStepsTaken < tera->IndexedNodes.size()) {
@@ -63,7 +63,7 @@ void cruthu::FormaMountains::Modify(std::shared_ptr<cruthu::ITera> tera) {
 
     std::mt19937 rng;
     rng.seed(this->mSeed);
-    std::uniform_real_distribution<double> height(.3,1.0);
+    std::uniform_real_distribution<double> height(.81,1.0);
 
     for(auto node : tera->IndexedNodes) {
         if(node->GetTerrain() != cruthu::Terrain::Type::MOUNTAIN) {

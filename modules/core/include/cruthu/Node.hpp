@@ -15,6 +15,7 @@ public:
         GRASSLAND,
         FOREST,
         MOUNTAIN,
+        RIVER,
     };
 };
 

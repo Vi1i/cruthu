@@ -43,6 +43,7 @@ add_subdirectory(modules/teragen)
 add_subdirectory(modules/indexer)
 add_subdirectory(modules/indexermountains)
 add_subdirectory(modules/formamountains)
+add_subdirectory(modules/formarivers)
 add_subdirectory(modules/formaperlin)
 add_subdirectory(modules/cli)
 
