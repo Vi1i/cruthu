@@ -1,4 +1,4 @@
-find_package(glm REQUIRED)
+#find_package(glm REQUIRED)
 
 add_executable(cruthu-cli main.cpp)
 

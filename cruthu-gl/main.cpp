@@ -49,7 +49,7 @@ int main(int argc, char * argv[]) {
     // glfwWindowHint(GLFW_SAMPLES, 4);
     // glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     // glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
+    // glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);

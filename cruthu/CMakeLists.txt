@@ -1,4 +1,4 @@
-find_package(glm REQUIRED)
+#find_package(glm REQUIRED)
 
 configure_file(config.hpp.in ${CMAKE_CURRENT_BINARY_DIR}/config.hpp @ONLY)
 
